@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, Suspense, lazy } from "react";
 import Hero from "../sections/Hero";
-import Services from "../sections/Services";
-import OurValues from "../sections/OurValues";
-import OurCompany from "../sections/OurCompany";
-import TestimonialsSection from "../sections/TestimonialsSection";
-import CTA from "../Components/Common/CTA";
-import ProjectVault from "../sections/ProjectShowcase";
+// Lazy-load below-fold/heavy sections to reduce initial bundle
+const OurCompany = lazy(() => import("../sections/OurCompany"));
+const Services = lazy(() => import("../sections/Services"));
+const OurValues = lazy(() => import("../sections/OurValues"));
+const TestimonialsSection = lazy(() => import("../sections/TestimonialsSection"));
+const CTA = lazy(() => import("../Components/Common/CTA"));
+const ProjectVault = lazy(() => import("../sections/ProjectShowcase"));
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "@studio-freight/lenis"; // Install this: npm install @studio-freight/lenis
@@ -28,17 +29,16 @@ const HomePage = () => {
       touchMultiplier: 2,
     });
 
+    // Single RAF loop for Lenis (avoid duplicate RAFs / gsap.ticker calls)
+    let rafId;
     function raf(time) {
       lenis.raf(time);
-      requestAnimationFrame(raf);
+      rafId = requestAnimationFrame(raf);
     }
-    requestAnimationFrame(raf);
+    rafId = requestAnimationFrame(raf);
 
-    // Sync Lenis with ScrollTrigger
+    // Keep ScrollTrigger in sync with Lenis's scroller
     lenis.on("scroll", ScrollTrigger.update);
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
 
     const ctx = gsap.context(() => {
       const sections = gsap.utils.toArray(".nexus-slab");
@@ -104,6 +104,7 @@ const HomePage = () => {
 
     return () => {
       ctx.revert();
+      cancelAnimationFrame(rafId);
       lenis.destroy();
     };
   }, []);
@@ -133,35 +134,47 @@ const HomePage = () => {
           
           <section className="nexus-slab relative bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
             <div className="inner-content p-0">
-              <OurCompany />
+              <Suspense fallback={<div className="min-h-[200px]" />}>
+                <OurCompany />
+              </Suspense>
             </div>
           </section>
 
           <section className="nexus-slab relative bg-[#050505] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
             <div className="inner-content p-0">
-              <Services />
+              <Suspense fallback={<div className="min-h-[160px]" />}>
+                <Services />
+              </Suspense>
             </div>
           </section>
 
           {/* PROJECT VAULT: The "Core" Node */}
           <section className="relative z-40">
-            <ProjectVault />
+            <Suspense fallback={<div className="min-h-[320px]" />}>
+              <ProjectVault />
+            </Suspense>
           </section>
 
           <section className="nexus-slab relative bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
             <div className="inner-content p-0">
-              <OurValues />
+              <Suspense fallback={<div className="min-h-[160px]" />}>
+                <OurValues />
+              </Suspense>
             </div>
           </section>
 
           <section className="nexus-slab relative bg-black border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
             <div className="inner-content p-0">
-              <TestimonialsSection />
+              <Suspense fallback={<div className="min-h-[160px]" />}>
+                <TestimonialsSection />
+              </Suspense>
             </div>
           </section>
 
           <div className="relative z-50 bg-[#020202] border-t border-white/10 shadow-[0_-100px_100px_rgba(0,0,0,1)]">
-            <CTA />
+            <Suspense fallback={<div className="py-8" />}>
+              <CTA />
+            </Suspense>
           </div>
 
         </div>

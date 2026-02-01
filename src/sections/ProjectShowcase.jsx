@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState, memo, useCallback } from 'react';
+import React, { useEffect, useRef, useState, memo, useCallback, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import Lenis from '@studio-freight/lenis';
 import { ExternalLink, Github, Cpu, Layers, ArrowUpRight, Zap } from 'lucide-react';
 import { mockProjects } from '../data/mockProjects';
 
@@ -39,6 +40,7 @@ const Project3DCard = memo(({ project, progress, mousePos, isMobile, index }) =>
           <img 
             src={project.thumbnail} 
             alt={project.title}
+            loading="lazy"
             className="w-full h-full object-cover saturate-[1.2] brightness-[0.6] contrast-[1.1] transition-transform duration-700"
             style={{ transform: `scale(${1 + (1 - progress) * 0.3})` }}
           />
@@ -81,9 +83,7 @@ const Project3DCard = memo(({ project, progress, mousePos, isMobile, index }) =>
           </div>
         </div>
       </div>
-      <style>{`
-        .hover-bg-accent:hover { background-color: ${accentColor}; }
-      `}</style>
+      {/* Removed per-card <style> injection to reduce DOM cost */}
     </div>
   );
 });
@@ -98,16 +98,59 @@ const ProjectVault = () => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
+    // Throttle mouse updates using rAF to avoid flooding React state
+    const mousePosRef = { current: { x: 0.5, y: 0.5 } };
+    const rafRef = { id: null };
     const handleMouseMove = (e) => {
-      if (!isMobile) setMousePos({ x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight });
+      if (isMobile) return;
+      mousePosRef.current = { x: e.clientX / window.innerWidth, y: e.clientY / window.innerHeight };
+      if (rafRef.id == null) {
+        rafRef.id = requestAnimationFrame(() => {
+          setMousePos(mousePosRef.current);
+          rafRef.id = null;
+        });
+      }
     };
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Reuse a global Lenis instance if present to avoid multiple RAF loops
+    let lenis = window._lenisInstance;
+    let createdLenis = false;
+    let rafId;
+    if (!lenis) {
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        smoothWheel: true,
+        smoothTouch: false,
+        wheelMultiplier: 1,
+      });
+      // start RAF loop for Lenis
+      function rafLoop(time) { lenis.raf(time); rafId = requestAnimationFrame(rafLoop); }
+      rafId = requestAnimationFrame(rafLoop);
+      // proxy scroller for ScrollTrigger
+      ScrollTrigger.scrollerProxy(document.documentElement, {
+        scrollTop(value) {
+          return arguments.length ? lenis.scrollTo(value) : lenis.scroll;
+        },
+        getBoundingClientRect() {
+          return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+        },
+        pinType: document.documentElement.style.transform ? 'transform' : 'fixed'
+      });
+      window._lenisInstance = lenis;
+      createdLenis = true;
+    }
+
+    // keep ScrollTrigger synced
+    lenis.on && lenis.on('scroll', ScrollTrigger.update);
 
     const ctx = gsap.context(() => {
       ScrollTrigger.create({
         trigger: sectionRef.current,
-        start: "top top",
+        start: 'top top',
         end: `+=${mockProjects.length * 150}%`,
         pin: true,
         scrub: 1,
@@ -119,22 +162,29 @@ const ProjectVault = () => {
       ctx.revert();
       window.removeEventListener('resize', checkMobile);
       window.removeEventListener('mousemove', handleMouseMove);
+      if (lenis && lenis.off) lenis.off('scroll', ScrollTrigger.update);
+      if (createdLenis) {
+        cancelAnimationFrame(rafId);
+        lenis.destroy();
+        delete window._lenisInstance;
+      }
     };
-  }, [isMobile]);
+  }, []); // run once — resize/mouse handlers update state without re-creating animations
 
   const currentIndex = Math.min(Math.floor(scrollProgress * mockProjects.length), mockProjects.length - 1);
   const currentAccent = projectAccents[currentIndex % projectAccents.length];
+
+  // Memoize SVG background data URI to avoid recreating on every render
+  const bgSvg = useMemo(() => {
+    return `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 60 L60 0 L0 0' fill='none' stroke='${encodeURIComponent(currentAccent)}' stroke-width='0.5'/%3E%3C/svg%3E")`;
+  }, [currentAccent]);
 
   return (
     <section ref={sectionRef} className="relative w-full h-screen bg-[#020202] overflow-hidden flex items-center justify-center contain-paint transition-colors duration-1000">
       
       {/* 4. PREMIUM BACKGROUND: COLOR-WAVE GRID */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 opacity-[0.05] transition-opacity duration-1000" 
-             style={{ 
-               backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M60 60 L60 0 L0 0' fill='none' stroke='${encodeURIComponent(currentAccent)}' stroke-width='0.5'/%3E%3C/svg%3E")` 
-             }} 
-        />
+        <div className="absolute inset-0 opacity-[0.05] transition-opacity duration-1000" style={{ backgroundImage: bgSvg }} />
         <div className="absolute inset-0 bg-gradient-to-b from-[#020202] via-transparent to-[#020202]" />
         {/* Dynamic Ambient Glow */}
         <div 
@@ -159,20 +209,26 @@ const ProjectVault = () => {
 
       {/* THE 3D STAGE */}
       <div className="relative w-full h-full flex items-center justify-center">
-        {mockProjects.map((project, i) => {
-          const cardStep = 1 / mockProjects.length;
-          const localProgress = Math.max(0, Math.min(1, (scrollProgress - (i * cardStep)) / cardStep));
-          return (
-            <Project3DCard 
-              key={project.id} 
-              project={project} 
-              progress={localProgress}
-              mousePos={mousePos}
-              isMobile={isMobile}
-              index={i}
-            />
-          );
-        })}
+        {/**
+         * Virtualize cards: render only current index and its neighbors to limit DOM/GPU work
+         */}
+        {([currentIndex - 1, currentIndex, currentIndex + 1]
+          .filter(i => i >= 0 && i < mockProjects.length)
+          .map(i => {
+            const project = mockProjects[i];
+            const cardStep = 1 / mockProjects.length;
+            const localProgress = Math.max(0, Math.min(1, (scrollProgress - (i * cardStep)) / cardStep));
+            return (
+              <Project3DCard
+                key={project.id}
+                project={project}
+                progress={localProgress}
+                mousePos={mousePos}
+                isMobile={isMobile}
+                index={i}
+              />
+            );
+        }))}
       </div>
 
       {/* NAVIGATION FOOTER */}
