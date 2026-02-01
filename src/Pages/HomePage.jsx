@@ -1,15 +1,13 @@
-import React, { useEffect, useRef, Suspense, lazy } from "react";
+import React, { useEffect, useRef } from "react";
 import Hero from "../sections/Hero";
-// Lazy-load below-fold/heavy sections to reduce initial bundle
-const OurCompany = lazy(() => import("../sections/OurCompany"));
-const Services = lazy(() => import("../sections/Services"));
-const OurValues = lazy(() => import("../sections/OurValues"));
-const TestimonialsSection = lazy(() => import("../sections/TestimonialsSection"));
-const CTA = lazy(() => import("../Components/Common/CTA"));
-const ProjectVault = lazy(() => import("../sections/ProjectShowcase"));
+import Services from "../sections/Services";
+import OurValues from "../sections/OurValues";
+import OurCompany from "../sections/OurCompany";
+import TestimonialsSection from "../sections/TestimonialsSection";
+import CTA from "../Components/Common/CTA";
+import ProjectVault from "../sections/ProjectShowcase";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Lenis from "@studio-freight/lenis"; // Install this: npm install @studio-freight/lenis
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,180 +15,122 @@ const HomePage = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    // 1. INITIALIZE LENIS (The secret to "Smooth & Fast")
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: "vertical",
-      gestureOrientation: "vertical",
-      smoothWheel: true,
-      wheelMultiplier: 1,
-      smoothTouch: false,
-      touchMultiplier: 2,
-    });
-
-    // Single RAF loop for Lenis (avoid duplicate RAFs / gsap.ticker calls)
-    let rafId;
-    function raf(time) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    // Keep ScrollTrigger in sync with Lenis's scroller
-    lenis.on("scroll", ScrollTrigger.update);
-
     const ctx = gsap.context(() => {
-      const sections = gsap.utils.toArray(".nexus-slab");
+      const sections = gsap.utils.toArray(".reveal-section");
 
       sections.forEach((section, i) => {
-        // Skip hero for the entrance, but give it a "recede" effect
-        if (i === 0) {
-          gsap.to(section.querySelector(".inner-content"), {
-            yPercent: -20,
-            opacity: 0,
-            scale: 0.9,
-            scrollTrigger: {
-              trigger: section,
-              start: "top top",
-              end: "bottom top",
-              scrub: true,
-            },
-          });
-          return;
-        }
+        // We create a "Z-Space" reveal
+        // The section starts small and deep, then grows to full screen
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom", 
+            end: "top top",
+            scrub: 1,
+          }
+        });
 
-        // 2. THE "SLAB UNVEIL" ANIMATION
-        // Fast, snappy entrance with a GPU-accelerated blur/scale
-        gsap.fromTo(section,
+        tl.fromTo(section, 
           { 
-            y: "30vh", 
-            rotateX: -5,
-            transformOrigin: "top center" 
+            scale: 0.8,
+            opacity: 0,
+            filter: "blur(15px) brightness(0.5)",
+            // Geometric Aperture Mask
+            clipPath: "circle(0% at 50% 50%)" 
           },
           {
-            y: 0,
-            rotateX: 0,
-            ease: "expo.out",
-            scrollTrigger: {
-              trigger: section,
-              start: "top bottom",
-              end: "top 10%",
-              scrub: 1, // Snappy scrub for fast response
-            }
+            scale: 1,
+            opacity: 1,
+            filter: "blur(0px) brightness(1)",
+            clipPath: "circle(100% at 50% 50%)",
+            ease: "none"
           }
         );
 
-        // 3. INTERNAL CONTENT PARALLAX
-        // Makes the images/text inside move slightly faster to create depth
-        const inner = section.querySelector(".inner-content");
-        if (inner) {
-          gsap.fromTo(inner,
-            { y: 80, opacity: 0 },
-            { 
-              y: 0, 
-              opacity: 1,
-              scrollTrigger: {
-                trigger: section,
-                start: "top 90%",
-                end: "top center",
-                scrub: 2
-              }
+        // Parallax for the content inside to give "Atmospheric Depth"
+        gsap.fromTo(section.querySelector(".content-inner"), 
+          { z: -500, opacity: 0 },
+          { 
+            z: 0, 
+            opacity: 1,
+            scrollTrigger: {
+              trigger: section,
+              start: "top 80%",
+              end: "top 20%",
+              scrub: 1
             }
-          );
-        }
+          }
+        );
       });
     }, containerRef);
 
-    return () => {
-      ctx.revert();
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-    };
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div ref={containerRef} className="bg-[#020202] text-white selection:bg-indigo-500">
+    <div ref={containerRef} className="relative bg-[#020202] text-white overflow-x-hidden selection:bg-indigo-500">
       
-      {/* HUD: FIXED PERSPECTIVE INDICATOR */}
-      {/* <div className="fixed top-12 left-12 z-[100] pointer-events-none opacity-20 hidden md:block">
-          <div className="flex items-center gap-4 mb-2">
-             <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse" />
-             <div className="h-[1px] w-24 bg-gradient-to-r from-indigo-500 to-transparent" />
-          </div>
-          <span className="font-mono text-[9px] tracking-[0.6em] uppercase">Architecture_Nexus_v1.0</span>
-      </div> */}
+      {/* --- PREMIUM HUD NAVIGATION INDICATOR --- */}
+      <div className="fixed right-10 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-4 mix-blend-difference">
+         <span className="text-[9px] font-mono tracking-[0.5em] rotate-90 origin-right uppercase opacity-30">Stream_Scroll</span>
+         <div className="w-[1px] h-32 bg-white/20" />
+      </div>
 
       <div className="relative">
         
-        <section className="nexus-slab relative z-10 h-screen overflow-hidden">
-          <div className="inner-content h-full w-full">
-            <Hero />
+        {/* HERO - Fixed in place while next section 'grows' over it */}
+        <section className="relative z-10 h-screen overflow-hidden">
+          <Hero />
+        </section>
+
+        {/* SEQUENTIAL REVEALS */}
+        <section className="reveal-section relative z-20 mt-[-20vh]">
+          <div className="content-inner perspective-[1000px]">
+            <OurCompany />
           </div>
         </section>
 
-        {/* EACH SECTION IS A 'SLAB' */}
-        <div className="relative z-20 space-y-[-1px]">
-          
-          <section className="nexus-slab relative bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
-            <div className="inner-content p-0">
-              <Suspense fallback={<div className="min-h-[200px]" />}>
-                <OurCompany />
-              </Suspense>
-            </div>
-          </section>
-
-          <section className="nexus-slab relative bg-[#050505] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
-            <div className="inner-content p-0">
-              <Suspense fallback={<div className="min-h-[160px]" />}>
-                <Services />
-              </Suspense>
-            </div>
-          </section>
-
-          {/* PROJECT VAULT: The "Core" Node */}
-          <section className="relative z-40">
-            <Suspense fallback={<div className="min-h-[320px]" />}>
-              <ProjectVault />
-            </Suspense>
-          </section>
-
-          <section className="nexus-slab relative bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
-            <div className="inner-content p-0">
-              <Suspense fallback={<div className="min-h-[160px]" />}>
-                <OurValues />
-              </Suspense>
-            </div>
-          </section>
-
-          <section className="nexus-slab relative bg-black border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,1)]">
-            <div className="inner-content p-0">
-              <Suspense fallback={<div className="min-h-[160px]" />}>
-                <TestimonialsSection />
-              </Suspense>
-            </div>
-          </section>
-
-          <div className="relative z-50 bg-[#020202] border-t border-white/10 shadow-[0_-100px_100px_rgba(0,0,0,1)]">
-            <Suspense fallback={<div className="py-8" />}>
-              <CTA />
-            </Suspense>
+        <section className="reveal-section relative z-30 mt-[-20vh]">
+          <div className="content-inner perspective-[1000px]">
+            <Services />
           </div>
+        </section>
 
+        {/* ProjectVault handles its own internal 3D logic */}
+        <section className="relative z-40">
+          <ProjectVault />
+        </section>
+
+        <section className="reveal-section relative z-30 mt-[-20vh]">
+          <div className="content-inner perspective-[1000px]">
+            <OurValues />
+          </div>
+        </section>
+
+        <section className="reveal-section relative z-20">
+          <div className="content-inner perspective-[1000px]">
+            <TestimonialsSection />
+          </div>
+        </section>
+
+        {/* FINAL SLAB */}
+        <div className="relative z-50 bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
+          <CTA />
         </div>
+
       </div>
 
-      {/* NOISE OVERLAY */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.012] z-[9999] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      {/* ATMOSPHERIC NOISE (The Cinematic Grain) */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.02] z-[9999] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
       <style>{`
-        /* Essential for smooth performance */
-        .nexus-slab {
-          will-change: transform;
-          contain: paint;
+        .reveal-section {
+          will-change: transform, clip-path, filter;
+          background: #020202;
         }
-        .inner-content {
-          will-change: transform, opacity;
+        /* Prevents jitter during clip-path animations */
+        .reveal-section > div {
+           transform-style: preserve-3d;
         }
       `}</style>
     </div>
