@@ -55,7 +55,7 @@ const Footer = () => {
           {/* 2. NAVIGATION SLABS (5 Cols) */}
           <div className="lg:col-span-5 grid grid-cols-2 gap-12">
             <div className="space-y-8">
-              <span className="text-[10px] font-mono tracking-[0.5em] uppercase text-indigo-500 font-black">// System_Map</span>
+              <span className="text-[10px] font-mono tracking-[0.5em] uppercase text-indigo-500 font-black">System_Map</span>
               <ul className="space-y-4">
                 {["About", "Solutions", "Showcase", "Intelligence", "FAQs"].map((item, i) => (
                   <li key={i}>
@@ -69,7 +69,7 @@ const Footer = () => {
             </div>
 
             <div className="space-y-8">
-              <span className="text-[10px] font-mono tracking-[0.5em] uppercase text-indigo-500 font-black">// Core_Nodes</span>
+              <span className="text-[10px] font-mono tracking-[0.5em] uppercase text-indigo-500 font-black">Core_Nodes</span>
               <ul className="space-y-4">
                 {["Web Dev", "React Labs", "UI/UX Opt", "System Arch", "Cloud Ops"].map((item, i) => (
                   <li key={i}>

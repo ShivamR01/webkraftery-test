@@ -7,22 +7,22 @@ import 'swiper/css/effect-coverflow';
 
 const serviceData = [
   { 
-    title: 'Custom\nWeb Dev', 
-    description: 'Bespoke digital ecosystems engineered for high-performance scale and speed.', 
+    title: 'Custom\nWebsite Development', 
+    description: 'Custom-built websites designed to match your brand, engage your audience, and drive results. Fast, responsive, secure, and built for growth.', 
     iconPath: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4', 
     bgColor: 'bg-[#FF5F1F]', 
     textColor: 'text-black' 
   },
   { 
     title: 'Backend\nLogic', 
-    description: 'Robust server-side architecture designed for millisecond latency.', 
+    description: 'Secure, scalable backend development with optimized APIs, databases, and server-side logic.', 
     iconPath: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z', 
     bgColor: 'bg-[#0047AB]', 
     textColor: 'text-white' 
   },
   { 
     title: 'Frontend\nArtistry', 
-    description: 'Immersive interfaces where human emotion meets digital logic.', 
+    description: 'We create visually appealing, fast, and user-friendly frontends that enhance user engagement and improve conversion rates. Every interface is designed to align with your brand identity and business objectives.', 
     iconPath: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', 
     bgColor: 'bg-[#00FA9A]', 
     textColor: 'text-black' 
@@ -34,6 +34,23 @@ const serviceData = [
     bgColor: 'bg-[#1A1A1A]', 
     textColor: 'text-white' 
   },
+  {
+  title: 'React\nDevelopment',
+  description: 'Crafting dynamic interfaces with reusable components and seamless state flows.',
+  iconPath: 'M12 2a4 4 0 014 4v1h1a3 3 0 013 3v4a3 3 0 01-3 3h-1v1a4 4 0 01-4 4h-2a4 4 0 01-4-4v-1H5a3 3 0 01-3-3v-4a3 3 0 013-3h1V6a4 4 0 014-4h2z',
+  bgColor: 'bg-[#0F172A]',
+  textColor: 'text-cyan-400'
+},
+{
+  title: 'Software\nMaintenance & Support',
+  description: 'Ensuring stability, performance, and continuous improvement long after launch.',
+  iconPath: 'M12 8v4l3 3M21 12a9 9 0 11-6.219-8.56',
+  bgColor: 'bg-[#1A1A1A]',
+  textColor: 'text-white'
+}
+
+
+
 ];
 
 const ServiceCard = memo(({ service, index }) => (

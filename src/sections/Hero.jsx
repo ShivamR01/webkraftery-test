@@ -143,13 +143,6 @@ const Hero = () => {
         </div>
       </div>
 
-      {/* Corner UI Elements (Premium Touch) */}
-      {/* <div className="absolute bottom-10 left-10 hidden lg:block z-20">
-        <p className="text-white/30 text-[10px] tracking-widest uppercase rotate-90 origin-left">
-          Scroll to Explore
-        </p>
-      </div> */}
-
       <div className="absolute top-10 right-10 z-20">
         <div className="flex gap-2">
           {[1, 2, 3].map((i) => (

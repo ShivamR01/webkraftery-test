@@ -112,9 +112,6 @@ const Navbar = () => {
       >
         {/* Header inside Menu */}
         <div className="flex justify-between items-center px-6 py-6 md:px-12 border-b border-white/5">
-          {/* <span className="text-white/30 font-mono text-[10px] tracking-widest uppercase italic">
-            Index_2026
-          </span> */}
           <button
             onClick={() => setIsOpen(false)}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 text-white active:scale-90 transition-transform"

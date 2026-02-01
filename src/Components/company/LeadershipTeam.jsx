@@ -16,14 +16,6 @@ const teamMembers = [
   },
   {
     id: "02",
-    name: 'Prince Tyagi',
-    role: 'Co-Founder & CTO',
-    bio: 'Passionate developer skilled in building seamless user experiences with a focus on clean, mission-critical code.',
-    email: "princetyagi1901@gmail.com",
-    color: "#6366f1" // Indigo
-  },
-  {
-    id: "03",
     name: 'The RealCoder',
     role: 'Managing Director',
     bio: 'Expert in operational management and software architecture, translating digital visions into market-ready products.',
