@@ -8,6 +8,7 @@ import CTA from "../Components/Common/CTA";
 import ProjectVault from "../sections/ProjectShowcase";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "@studio-freight/lenis"; // External Library for buttery smooth scroll
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,93 +16,116 @@ const HomePage = () => {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
+    // 1. Initialize Lenis Smooth Scroll
+    // This makes animations feel 10x faster and smoother by decoupling scroll from the browser's main thread.
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+    });
+
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    // 2. Optimized GSAP Logic
+    let mm = gsap.matchMedia();
+
+    mm.add({
+      isDesktop: "(min-width: 1024px)",
+      isMobile: "(max-width: 1023px)"
+    }, (context) => {
+      let { isDesktop } = context.conditions;
       const sections = gsap.utils.toArray(".reveal-section");
 
-      sections.forEach((section, i) => {
-        // We create a "Z-Space" reveal
-        // The section starts small and deep, then grows to full screen
+      sections.forEach((section) => {
+        const content = section.querySelector(".content-inner");
+        
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
-            start: "top bottom", 
+            start: "top bottom",
             end: "top top",
-            scrub: 1,
+            scrub: isDesktop ? 1 : 0.5, // Faster scrub on mobile
+            // Use toggleActions for non-scrub triggers to save memory
           }
         });
 
+        // DESKTOP: Full visual suite
+        // MOBILE: Removes blur/clipPath to prevent "hanging"
         tl.fromTo(section, 
           { 
-            scale: 0.8,
+            scale: 0.85,
             opacity: 0,
-            filter: "blur(15px) brightness(0.5)",
-            // Geometric Aperture Mask
-            clipPath: "circle(0% at 50% 50%)" 
+            ...(isDesktop && { 
+              filter: "blur(12px) brightness(0.5)",
+              clipPath: "circle(20% at 50% 50%)" 
+            })
           },
           {
             scale: 1,
             opacity: 1,
-            filter: "blur(0px) brightness(1)",
-            clipPath: "circle(100% at 50% 50%)",
-            ease: "none"
+            ...(isDesktop && { 
+              filter: "blur(0px) brightness(1)",
+              clipPath: "circle(100% at 50% 50%)"
+            }),
+            ease: "power2.out"
           }
         );
 
-        // Parallax for the content inside to give "Atmospheric Depth"
-        gsap.fromTo(section.querySelector(".content-inner"), 
-          { z: -500, opacity: 0 },
-          { 
-            z: 0, 
-            opacity: 1,
-            scrollTrigger: {
-              trigger: section,
-              start: "top 80%",
-              end: "top 20%",
-              scrub: 1
+        // Parallax depth (kept for both, but simplified for performance)
+        if (content) {
+          gsap.fromTo(content, 
+            { z: isDesktop ? -400 : -100, opacity: 0 },
+            { 
+              z: 0, 
+              opacity: 1,
+              scrollTrigger: {
+                trigger: section,
+                start: "top 90%",
+                end: "top 20%",
+                scrub: true
+              }
             }
-          }
-        );
+          );
+        }
       });
-    }, containerRef);
+    });
 
-    return () => ctx.revert();
+    return () => {
+      lenis.destroy();
+      mm.revert();
+    };
   }, []);
 
   return (
-    <div ref={containerRef} className="relative bg-[#020202] text-white overflow-x-hidden selection:bg-indigo-500">
-      
-      {/* --- PREMIUM HUD NAVIGATION INDICATOR --- */}
-      <div className="fixed right-10 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-4 mix-blend-difference">
-         <span className="text-[9px] font-mono tracking-[0.5em] rotate-90 origin-right uppercase opacity-30">Stream_Scroll</span>
-         <div className="w-[1px] h-32 bg-white/20" />
-      </div>
-
+    <div ref={containerRef} className="relative bg-[#020202] text-white selection:bg-indigo-500">
       <div className="relative">
         
-        {/* HERO - Fixed in place while next section 'grows' over it */}
         <section className="relative z-10 h-screen overflow-hidden">
           <Hero />
         </section>
 
-        {/* SEQUENTIAL REVEALS */}
-        <section className="reveal-section relative z-20 mt-[-20vh]">
+        {/* Using standard margin-top for mobile to avoid layout calculation lag */}
+        <section className="reveal-section relative z-20 mt-[-10vh] lg:mt-[-20vh]">
           <div className="content-inner perspective-[1000px]">
             <OurCompany />
           </div>
         </section>
 
-        <section className="reveal-section relative z-30 mt-[-20vh]">
+        <section className="reveal-section relative z-30 mt-[-10vh] lg:mt-[-20vh]">
           <div className="content-inner perspective-[1000px]">
             <Services />
           </div>
         </section>
 
-        {/* ProjectVault handles its own internal 3D logic */}
         <section className="relative z-40">
           <ProjectVault />
         </section>
 
-        <section className="reveal-section relative z-30 mt-[-20vh]">
+        <section className="reveal-section relative z-30 mt-[-10vh] lg:mt-[-20vh]">
           <div className="content-inner perspective-[1000px]">
             <OurValues />
           </div>
@@ -113,24 +137,25 @@ const HomePage = () => {
           </div>
         </section>
 
-        {/* FINAL SLAB */}
         <div className="relative z-50 bg-[#020202] border-t border-white/5 shadow-[0_-50px_100px_rgba(0,0,0,0.9)]">
           <CTA />
         </div>
-
       </div>
 
-      {/* ATMOSPHERIC NOISE (The Cinematic Grain) */}
-      <div className="fixed inset-0 pointer-events-none opacity-[0.02] z-[9999] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
+      {/* Atmospheric noise is hidden on mobile to save massive amounts of battery/GPU */}
+      <div className="hidden lg:block fixed inset-0 pointer-events-none opacity-[0.02] z-[9999] bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
       
       <style>{`
         .reveal-section {
-          will-change: transform, clip-path, filter;
+          /* translateZ(0) forces GPU acceleration */
+          will-change: transform, opacity;
+          transform: translateZ(0); 
           background: #020202;
+          backface-visibility: hidden;
         }
-        /* Prevents jitter during clip-path animations */
-        .reveal-section > div {
+        .content-inner {
            transform-style: preserve-3d;
+           will-change: transform;
         }
       `}</style>
     </div>
