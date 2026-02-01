@@ -107,7 +107,7 @@ const CTA = () => {
           </button>
 
           {/* METADATA FOOTER */}
-          <div className="mt-32 w-full flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/5 pt-12">
+          {/* <div className="mt-32 w-full flex flex-col md:flex-row items-center justify-between gap-8 border-t border-white/5 pt-12">
              <div className="flex gap-6">
                 <span className="text-[10px] font-mono text-white/20 tracking-widest uppercase italic">Lat: 28.6139° N</span>
                 <span className="text-[10px] font-mono text-white/20 tracking-widest uppercase italic">Long: 77.2090° E</span>
@@ -120,7 +120,7 @@ const CTA = () => {
              <div className="text-[10px] font-mono text-white/20 tracking-[0.4em] uppercase">
                ©2026_WebKraftery_Systems
              </div>
-          </div>
+          </div> */}
 
         </div>
       </div>

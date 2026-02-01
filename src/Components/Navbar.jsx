@@ -112,9 +112,9 @@ const Navbar = () => {
       >
         {/* Header inside Menu */}
         <div className="flex justify-between items-center px-6 py-6 md:px-12 border-b border-white/5">
-          <span className="text-white/30 font-mono text-[10px] tracking-widest uppercase italic">
+          {/* <span className="text-white/30 font-mono text-[10px] tracking-widest uppercase italic">
             Index_2026
-          </span>
+          </span> */}
           <button
             onClick={() => setIsOpen(false)}
             className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 text-white active:scale-90 transition-transform"
@@ -128,7 +128,7 @@ const Navbar = () => {
           {/* Section 1: Services */}
           <div className="w-full md:w-[60%] p-8 md:p-20 flex flex-col justify-center">
             <p className="nav-item-anim text-purple-500 font-mono text-[10px] tracking-[0.4em] uppercase mb-8 md:mb-12">
-              // Services
+              Services
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
               {itSolutions.map((item, i) => (
@@ -150,7 +150,7 @@ const Navbar = () => {
           <div className="w-full md:w-[40%] bg-white/[0.02] p-8 md:p-20 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/5">
             <div className="flex flex-col gap-4 md:gap-6">
               <p className="nav-item-anim text-white/20 font-mono text-[10px] tracking-[0.4em] uppercase mb-2">
-                // Navigation
+                 Navigation
               </p>
 
               {secondaryLinks.map((link, i) => (
@@ -167,16 +167,16 @@ const Navbar = () => {
 
             {/* Footer Information */}
             <div className="mt-12 md:mt-0 pt-10 border-t border-white/10 flex flex-row justify-between items-end">
-              <div>
+              {/* <div>
                 <p className="text-[10px] text-white/20 uppercase font-mono mb-1">
                   HQ / India
                 </p>
                 <p className="text-[11px] text-white/60 uppercase">
                   28.6692° N, 77.4538° E
                 </p>
-              </div>
+              </div> */}
               <p className="text-[10px] text-white/20 uppercase font-mono">
-                © 2026 PRYZEN
+                © 2026 WEBKRAFTERY
               </p>
             </div>
           </div>
@@ -184,14 +184,14 @@ const Navbar = () => {
       </div>
 
       {/* --- Adaptive Status Dot --- */}
-      <div className="fixed bottom-6 right-6 z-[100] md:right-10 md:bottom-10 pointer-events-none">
+      {/* <div className="fixed bottom-6 right-6 z-[100] md:right-10 md:bottom-10 pointer-events-none">
         <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full">
           <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
           <span className="font-mono text-[8px] tracking-widest text-white/40 uppercase">
             Live
           </span>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

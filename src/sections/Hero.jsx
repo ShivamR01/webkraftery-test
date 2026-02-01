@@ -2,9 +2,8 @@ import React, { useRef, useMemo } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, MeshDistortMaterial, MeshTransmissionMaterial, Environment, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
-import Test from "./Test";
 
-// 1. Adaptive 3D Shapes (Scaled for Screen Size)
+
 const FloatingShapes = ({ isMobile }) => {
   return (
     <group scale={isMobile ? 0.7 : 1}>
@@ -137,20 +136,19 @@ const Hero = () => {
               <span className="absolute right-4 opacity-0 group-hover:opacity-100 transition-all duration-300">→</span>
             </button>
             
-            <div className="flex items-center gap-4 group cursor-pointer">
+            {/* <div className="flex items-center gap-4 group cursor-pointer">
               <div className="h-[1px] w-8 bg-white/30 group-hover:w-12 transition-all duration-300" />
-              {/* <Test /> */}
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
 
       {/* Corner UI Elements (Premium Touch) */}
-      <div className="absolute bottom-10 left-10 hidden lg:block z-20">
+      {/* <div className="absolute bottom-10 left-10 hidden lg:block z-20">
         <p className="text-white/30 text-[10px] tracking-widest uppercase rotate-90 origin-left">
           Scroll to Explore
         </p>
-      </div>
+      </div> */}
 
       <div className="absolute top-10 right-10 z-20">
         <div className="flex gap-2">

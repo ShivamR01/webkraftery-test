@@ -57,7 +57,7 @@ const OurCompany = () => {
       {/* Ghost Background Text */}
       <div 
         ref={ghostTextRef}
-        className="absolute top-1/4 left-0 whitespace-nowrap opacity-[0.01] pointer-events-none select-none font-black text-[25vw] tracking-tighter uppercase text-white"
+        className="absolute top-1/4 left-0 whitespace-nowrap opacity-[0.05] pointer-events-none select-none font-black text-[25vw] tracking-tighter uppercase text-white"
       >
         Digital Architecture • Digital Architecture •
       </div>
@@ -66,7 +66,7 @@ const OurCompany = () => {
         <div ref={leftColRef} className="lg:col-span-7 flex flex-col justify-center">
           <div className="reveal-mask overflow-hidden mb-6">
             <span className="block text-indigo-400 font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase font-bold italic">
-              // The Studio
+              The Studio
             </span>
           </div>
           <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-light leading-[1.1] text-white">
