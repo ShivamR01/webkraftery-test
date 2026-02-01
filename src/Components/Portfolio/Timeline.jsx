@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import VantaBackground from './VantaBackground';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useSpring } from 'framer-motion';
 import TimelineCurve from './TimelineCurve';
 import TimelineNode from './TimelineNode';
 import ProjectModal from './ProjectModal';
@@ -13,11 +13,15 @@ const Timeline = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [containerHeight, setContainerHeight] = useState(2000);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: containerRef });
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
 
   useEffect(() => {
     const updateLayout = () => {
-      const baseHeight = window.innerHeight < 768 ? 1.2 : 1.5;
-      setContainerHeight(Math.max(window.innerHeight * baseHeight, mockProjects.length * 400 + 600));
+      const baseHeight = window.innerHeight < 768 ? 1.4 : 1.8;
+      setContainerHeight(Math.max(window.innerHeight * baseHeight, mockProjects.length * 450 + 800));
       setScreenWidth(window.innerWidth);
     };
 
@@ -27,86 +31,83 @@ const Timeline = () => {
   }, []);
 
   const handleZoom = useCallback((delta) => {
-    setScale(prev => Math.min(Math.max(prev + delta, 0.4), 2.5));
+    setScale(prev => Math.min(Math.max(prev + delta, 0.5), 2.0));
   }, []);
-
-  const handleProjectClick = (project) => {
-    setSelectedProject(project);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => setSelectedProject(null), 200);
-  };
 
   const nodePositions = useMemo(() => {
     return mockProjects.map((_, i) => {
       const progress = i / (mockProjects.length - 1);
-      const y = 100 + progress * (containerHeight - 400);
+      const y = 150 + progress * (containerHeight - 500);
       
-      // Calculate amplitude based on screen size
       let amplitude;
-      if (screenWidth < 480) amplitude = 24;
-      else if (screenWidth < 768) amplitude = 18;
-      else if (screenWidth < 1024) amplitude = 14;
-      else amplitude = 25 + progress * 6;
+      if (screenWidth < 480) amplitude = 15;
+      else if (screenWidth < 768) amplitude = 20;
+      else amplitude = 30 + (progress * 5); // Quirky expanding curve
       
-      // Alternate sides for nodes
       const side = i % 2 === 0 ? 1 : -1;
-      const x = 25 + side * amplitude;
+      const x = 50 + side * amplitude; // Centered curve
       
-      return { 
-        x: `${x}%`, 
-        y 
-      };
+      return { x: `${x}%`, y };
     });
   }, [containerHeight, screenWidth]);
   
   return (
-    <div className="min-h-screen border-2  bg-gradient-to-br from-slate-950 via-indigo-950/80 to-slate-900 overflow-hidden relative">
-        <VantaBackground/>
+    <div ref={containerRef} className="min-h-screen bg-[#050505] text-[#e0e0e0] overflow-hidden relative selection:bg-purple-500/30">
+      <VantaBackground />
+      
+      {/* --- PREMIUM HUD PROGRESS BAR --- */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 z-[100] origin-left"
+        style={{ scaleX }}
+      />
 
-      {/* Header */}
-      <div className="relative z-10 pt-14 sm:pt-16 sm:pb-12 text-center px-4">
-        <motion.h1 
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent mb-4 sm:mb-6"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          Innovation Timeline
-        </motion.h1>
-        <motion.p 
-          className="text-slate-300 text-lg sm:text-xl md:text-2xl max-w-4xl mx-auto leading-relaxed"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
-        >
-          Journey through our breakthrough projects and technological milestones
-        </motion.p>
+      {/* --- GHOST TEXT BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.02] flex items-center justify-center overflow-hidden">
+        <h2 className="text-[30vw] font-black italic select-none">PORTFOLIO</h2>
       </div>
 
-      {/* Timeline */}
+      {/* Header: Editorial Style */}
+      <div className="relative z-10 pt-24 pb-20 text-center px-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="inline-block px-4 py-1 mb-6 border border-purple-500/30 rounded-full bg-purple-500/5 backdrop-blur-md"
+        >
+          <span className="text-purple-400 text-[10px] font-bold tracking-[0.4em] uppercase font-mono italic">
+            // Archive_Log: 2024-2026
+          </span>
+        </motion.div>
+        
+        <motion.h1 
+          className="text-6xl md:text-[120px] font-black tracking-tighter italic leading-none mb-8"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          INNOVATION <br />
+          <span className="not-italic font-serif font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-white/20">
+            milestones.
+          </span>
+        </motion.h1>
+      </div>
+
+      {/* Timeline Display */}
       <div className="flex justify-center w-full relative">
         <div
-          className="relative transition-transform duration-300 ease-out px-4 w-full max-w-[1000px] md:mb-10"
+          className="relative transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] w-full max-w-[1200px]"
           style={{
             height: `${containerHeight}px`,
             transform: `scale(${scale})`,
             transformOrigin: 'center top',
           }}
         >
-          {/* Timeline curve */}
           <TimelineCurve scale={scale} containerHeight={containerHeight} nodePositions={nodePositions} />
 
-          {/* Project nodes with embedded year labels */}
           {mockProjects.map((project, index) => (
             <TimelineNode
               key={project.id}
               project={project}
               position={nodePositions[index]}
-              onClick={handleProjectClick}
+              onClick={(p) => { setSelectedProject(p); setIsModalOpen(true); }}
               index={index}
               isLast={index === mockProjects.length - 1}
             />
@@ -114,45 +115,43 @@ const Timeline = () => {
         </div>
       </div>
 
-      {/* Zoom Controls */}
+      {/* Floating HUD Instructions */}
+      <motion.div 
+        className="hidden lg:block fixed top-32 left-10 z-40 bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-[2rem] p-6 max-w-[200px] shadow-2xl"
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+          <span className="text-[10px] font-mono tracking-widest uppercase text-gray-400">System_Active</span>
+        </div>
+        <ul className="space-y-4">
+          {[
+            { l: 'Select Node', i: '01' },
+            { l: 'Zoom Navigation', i: '02' },
+            { l: 'Milestone Details', i: '03' }
+          ].map((item, i) => (
+            <li key={i} className="flex items-baseline gap-3">
+              <span className="text-[9px] font-mono text-purple-500">{item.i}</span>
+              <span className="text-xs font-light text-gray-300 italic tracking-wide">{item.l}</span>
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+
       <ZoomControls
-        className="fixed bottom-6 right-4 z-50"
+        className="fixed bottom-10 right-10 z-[60]"
         scale={scale}
         onZoomIn={() => handleZoom(0.2)}
         onZoomOut={() => handleZoom(-0.2)}
         onReset={() => setScale(1)}
       />
 
-      {/* Project Modal */}
       <ProjectModal
         project={selectedProject}
         isOpen={isModalOpen}
-        onClose={handleCloseModal}
+        onClose={() => { setIsModalOpen(false); setTimeout(() => setSelectedProject(null), 300); }}
       />
-
-      {/* Floating Info */}
-      <motion.div 
-        className="hidden lg:block absolute top-20 left-4 z-40 bg-slate-200/90 backdrop-blur-xl border border-indigo-500/30 rounded-xl p-4 max-w-xs shadow-lg"
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
-      >
-        <p className="mb-2 text-indigo-400 font-semibold text-sm">Explore Timeline:</p>
-        <ul className="space-y-1 text-sm">
-          {[
-            { label: 'Click nodes for details', color: 'bg-indigo-400' },
-            { label: 'Use zoom controls', color: 'bg-purple-400' },
-            { label: 'Hover for preview', color: 'bg-cyan-400' }
-          ].map((item, i) => (
-            <li key={i} className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.color}`} />
-              {item.label}
-            </li>
-          ))}
-        </ul>
-      </motion.div>
-
-
     </div>
   );
 };

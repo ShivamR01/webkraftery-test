@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-// Register GSAP plugins
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
@@ -11,157 +10,113 @@ const OurCompany = () => {
   const containerRef = useRef(null);
   const leftColRef = useRef(null);
   const rightColRef = useRef(null);
-  const ctaRef = useRef(null);
-  const gradientBgRef = useRef(null);
+  const ghostTextRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Continuous gradient animation (independent of scroll)
-      gsap.to(gradientBgRef.current, {
-        backgroundPosition: "100% 50%",
-        duration: 15,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
+      // Parallax Ghost Text
+      gsap.to(ghostTextRef.current, {
+        x: "-12%",
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
+        },
       });
 
-      // Left column animation with scrub
+      // Mask Reveal for Text
       gsap.fromTo(
-        leftColRef.current.querySelectorAll("h2, p"),
-        { opacity: 0, y: 40 },
+        ".reveal-mask",
+        { clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0 100%)", y: 40 },
         {
-          opacity: 1,
+          clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)",
           y: 0,
-          duration: 1,
           stagger: 0.1,
-          ease: "power3.out",
+          duration: 1.2,
+          ease: "expo.out",
           scrollTrigger: {
             trigger: leftColRef.current,
-            start: "top 85%",
-            end: "top 50%",
-            scrub: 1.5,
-            markers: false, // Set to true to debug positions
-          },
-        }
-      );
-
-      // Right column animation with scrub
-      gsap.fromTo(
-        rightColRef.current.querySelectorAll("p, strong"),
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          stagger: 0.1,
-          ease: "back.out(1.2)",
-          scrollTrigger: {
-            trigger: rightColRef.current,
             start: "top 80%",
-            end: "top 50%",
-            scrub: 1.2,
           },
         }
       );
-
-      // CTA animation with scrub
-      gsap.fromTo(
-        ctaRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          ease: "elastic.out(1, 0.5)",
-          scrollTrigger: {
-            trigger: ctaRef.current,
-            start: "top 85%",
-            end: "top 60%",
-            scrub: 1,
-          },
-        }
-      );
-
-      // Continuous subtle glow on CTA
-      gsap.to(ctaRef.current.querySelector("span:last-child"), {
-        opacity: 0.3,
-        duration: 2,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
     }, containerRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <div
+    <section
       ref={containerRef}
-      className="relative z-10 py-4  md:px-8 flex flex-col items-center overflow-hidden"
-      style={{
-        background:'#8b5cf6',
-        boxShadow: "0 25px 50px -12px rgba(139, 92, 246, 0.25)",
-      }}
+      className="relative z-20 pt-24 md:pt-48 pb-32 md:pb-48 px-6 md:px-12 bg-[#050505] overflow-visible"
     >
-      {/* Animated gradient overlay */}
-      <div
-        ref={gradientBgRef}
-        className="absolute inset-0 z-0 opacity-20 pointer-events-none"
+      {/* Background Noise Layer */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 
-      />
+      {/* Ghost Background Text */}
+      <div 
+        ref={ghostTextRef}
+        className="absolute top-1/4 left-0 whitespace-nowrap opacity-[0.01] pointer-events-none select-none font-black text-[25vw] tracking-tighter uppercase text-white"
+      >
+        Digital Architecture • Digital Architecture •
+      </div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1  md:grid-cols-2 gap-12 p-6 relative z-10">
-        {/* Left Column */}
-        <div
-          ref={leftColRef}
-          className="flex flex-col justify-center space-y-4"
-        >
-          <p className="text-sm text-purple-200 font-medium tracking-wider uppercase mb-2">
-            Our Company
-          </p>
-          <h2 className="text-4xl md:text-5xl font-bold leading-tight text-white">
-            "WebKraftery – Where Ideas Turn Into Impactful Software"
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 relative z-10">
+        <div ref={leftColRef} className="lg:col-span-7 flex flex-col justify-center">
+          <div className="reveal-mask overflow-hidden mb-6">
+            <span className="block text-indigo-400 font-mono text-[10px] md:text-xs tracking-[0.5em] uppercase font-bold italic">
+              // The Studio
+            </span>
+          </div>
+          <h2 className="text-[clamp(2.5rem,6vw,5rem)] font-light leading-[1.1] text-white">
+            <div className="reveal-mask italic">Crafting with</div>
+            <div className="reveal-mask font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-white via-white to-white/30">
+              Technical Grit.
+            </div>
           </h2>
         </div>
 
-        {/* Right Column */}
-        <div ref={rightColRef} className="flex items-center text-justify">
-          <p className="text-lg md:text-xl leading-relaxed text-purple-100/90">
-            WebKraftery  is a privately owned{" "}
-            <strong className="text-white font-semibold">
-              software development company
-            </strong>{" "}
-            specializing in custom web solutions and{" "}
-            <strong className="text-white font-semibold">
-              digital transformation services
-            </strong>
-            . Our team of experienced professionals delivers cutting-edge{" "}
-            <strong className="text-white font-semibold">
-              web applications
-            </strong>{" "}
-            and{" "}
-            <strong className="text-white font-semibold">
-              SEO-optimized platforms
-            </strong>{" "}
-            tailored to meet your unique business goals.
+        <div ref={rightColRef} className="lg:col-span-5 flex flex-col justify-center space-y-10 lg:pt-12">
+          <div className="desc-text relative pl-8 border-l border-white/10">
+            <p className="text-xl md:text-2xl leading-relaxed text-gray-300 font-light italic">
+              Specializing in <span className="text-white font-medium not-italic underline decoration-indigo-500/50 underline-offset-8">high-frequency</span> digital ecosystems.
+            </p>
+          </div>
+          <p className="desc-text text-gray-500 text-lg font-light leading-relaxed pl-8">
+            Every line of code is optimized for peak performance and absolute scalability.
           </p>
         </div>
       </div>
 
-      {/* Glowing CTA Button */}
-      <div
-        ref={ctaRef}
-        className="relative z-10 mt-16 px-8 py-4 bg-white/10 backdrop-blur-lg rounded-full border border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
-      >
-        <span className="text-xl text-white font-semibold tracking-wide relative z-10">
-          Discover Our Solutions →
+      {/* --- UNIQUE DOWNWARD BOUNDARY --- */}
+      {/* 1. The Downward Curve: Uses ellipse at the top to create the "Bulge"
+          2. Negative Bottom: We extend the height beyond the section to overlap 
+      */}
+      <div 
+        className="absolute bottom-[-60px] md:bottom-[-100px] left-0 w-full h-32 md:h-52 bg-[#050505] z-30" 
+        style={{ 
+          clipPath: "ellipse(70% 100% at 50% 0%)",
+        }} 
+      />
+      
+      {/* Floating System HUD - Repositioned to sit on the "bulge" */}
+      <div className="absolute bottom-[-20px] right-10 hidden xl:flex items-center gap-3 bg-white/[0.04] border border-white/10 px-4 py-2 rounded-lg z-40 backdrop-blur-md">
+        <div className="relative">
+          <div className="w-2 h-2 bg-indigo-500 rounded-full animate-ping absolute opacity-75" />
+          <div className="w-2 h-2 bg-indigo-500 rounded-full relative" />
+        </div>
+        <span className="text-[9px] font-mono tracking-tighter text-gray-200 uppercase">
+          Engine_Status: Optimal
         </span>
-        <span className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
       </div>
-    </div>
+
+      {/* Center Indicator */}
+      <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 z-40 opacity-10">
+         <div className="w-8 h-[2px] bg-white rotate-90" />
+      </div>
+    </section>
   );
 };
 
 export default OurCompany;
-

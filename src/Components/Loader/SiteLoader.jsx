@@ -1,6 +1,6 @@
 import React from 'react';
 import './SiteLoader.css'; // We'll create this CSS file for styling and animation
-import logo from '../../assets/Logo_web.png'
+import logo from '../../assets/logo-full.png'
 
 const SiteLoader = () => {
   return (

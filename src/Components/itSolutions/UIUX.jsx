@@ -2,169 +2,173 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router-dom';
-import img1 from '../../assets/uiux1.jpeg'
-import img2 from '../../assets/uiux-4.jpeg'
+import img1 from '../../assets/uiux1.jpeg';
+import img2 from '../../assets/uiux-4.jpeg';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const UIUX = () => {
   const navigate = useNavigate();
-  const heroTextRef = useRef(null); // Ref for the hero section text
-  const heroImageRef = useRef(null); // Ref for the hero section image
-  const section2Ref = useRef(null); // Ref for the second content section (text)
-  const section2ImageRef = useRef(null); // Ref for the second content section (image)
-  const ctaRef = useRef(null);         // Ref for the Call to Action section
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1.2, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    // Initial animation for the hero section (text and first image)
-    tl.fromTo(
-      heroTextRef.current,
-      { x: -100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 }
-    )
-    .fromTo(
-      heroImageRef.current,
-      { x: 100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 },
-      '-=0.8'
-    );
+      // Title Entrance
+      tl.from(".reveal-text", { y: 100, opacity: 0, stagger: 0.2, duration: 1.5 })
+        .from(".glass-card", { 
+          scale: 0.9, 
+          opacity: 0, 
+          duration: 1.2,
+          ease: "back.out(1.2)" 
+        }, "-=1")
+        .from(".floating-ui", { y: 40, opacity: 0, stagger: 0.1 }, "-=0.5");
 
-    // Scroll-triggered animations for subsequent sections
-    // Section 2 animation (text and image)
-    gsap.fromTo(
-      section2Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
+      // Background Parallax
+      gsap.to(".bg-shape", {
+        y: -100,
+        rotation: 15,
         scrollTrigger: {
-          trigger: section2Ref.current,
-          start: 'top 80%', // When top of trigger hits 80% of viewport
-          toggleActions: 'play none none none', // Play animation once
+          trigger: containerRef.current,
+          scrub: 2,
         }
-      }
-    );
+      });
 
-    gsap.fromTo(
-      section2ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section2ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
+      // Reveal sections on scroll
+      gsap.utils.toArray(".reveal-on-scroll").forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+          y: 50,
+          opacity: 0,
+          duration: 1.2,
+        });
+      });
+    }, containerRef);
 
-    // CTA section animation
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%', // Adjust as needed
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-200 min-h-screen py-2 px-4 sm:px-6 lg:px-8 mt-15">
-      <div className="max-w-[90vw] mx-auto rounded-xl shadow-2xl overflow-hidden bg-white">
-        {/* Hero Section for UI/UX Designing */}
-        <div className="paraFont-900 relative p-4 md:p-6 lg:p-8 text-center bg-gradient-to-b from-purple-950 to-purple-300 text-white">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-            UI/UX Designing
+    <div ref={containerRef} className="relative bg-[#08040a] text-[#f0f0f0] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- PREMIUM BACKGROUND ELEMENTS --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      
+      {/* Abstract Glowing Shapes */}
+      <div className="bg-shape absolute top-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-purple-600/20 blur-[120px] rounded-full" />
+      <div className="bg-shape absolute bottom-[10%] left-[-5%] w-[35vw] h-[35vw] bg-fuchsia-600/10 blur-[100px] rounded-full" />
+
+      {/* Background Kinetic Typography */}
+      <div className="absolute top-1/4 left-0 whitespace-nowrap opacity-[0.02] pointer-events-none select-none italic font-black text-[20vw] leading-none">
+        EMPATHY • PIXELS • FLOW • 
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+        
+        {/* --- HERO SECTION --- */}
+        <header className="text-center mb-40">
+          <div className="reveal-text inline-block px-4 py-1 mb-8 border border-purple-500/30 rounded-full bg-purple-500/5 backdrop-blur-md">
+            <span className="text-purple-400 text-[10px] font-bold tracking-[0.4em] uppercase font-mono">
+              The Architecture of Delight
+            </span>
+          </div>
+          <h1 className="reveal-text text-6xl md:text-[140px] font-black leading-[0.8] tracking-tighter italic mb-10">
+            UI/UX <br /> 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-300 to-fuchsia-500 not-italic font-serif font-light tracking-normal">
+              AESTHETICS.
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
-            Crafting intuitive, engaging, and visually stunning user experiences that captivate your audience.
+          <p className="reveal-text max-w-2xl mx-auto text-gray-500 text-lg md:text-xl font-light leading-relaxed">
+            We don't just design screens; we orchestrate human emotions through intuitive digital journeys.
           </p>
-        </div>
+        </header>
 
-        {/* Content Section 1: Why UI/UX Design */}
-        <div className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          <div ref={heroTextRef} className="md:w-1/2 ">
-            <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Designing Experiences That Delight and Convert
-            </h2>
-            <p className="mb-4 text-lg leading-relaxed">
-              User Interface (UI) and User Experience (UX) design are critical for the success of any digital product. We don't just make things look good; we create seamless, intuitive, and enjoyable interactions that lead to higher user satisfaction and better business outcomes.
-            </p>
-            <p className="text-purple-900 font-semibold mb-2">Our UI/UX Design Process:</p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>User Research & Persona Development</li>
-              <li>Wireframing & Prototyping</li>
-              <li>Information Architecture & User Flows</li>
-              <li>Visual Design & Branding</li>
-              <li>Usability Testing & Iteration</li>
-              <li>Accessibility Compliance</li>
-            </ul>
-          </div>
-
-          <div ref={heroImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={img1}
-              alt="UI/UX Design Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=UI/UX+Image"; }} // Fallback
+        {/* --- BENTO CONTENT GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+          
+          {/* Main Visual Thinking Card */}
+          <div className="glass-card md:col-span-8 bg-white/[0.03] border border-white/5 rounded-[3rem] p-12 relative overflow-hidden group">
+            <div className="relative z-10 md:w-2/3">
+              <h2 className="text-4xl font-serif italic mb-6">Designing for <br />Conversion.</h2>
+              <p className="text-gray-400 font-light leading-relaxed mb-8">
+                Our philosophy is simple: empathy leads to engagement. We analyze human behavior to eliminate friction and spark joy in every interaction.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                {['User Research', 'Wireframing', 'Prototyping', 'Accessibility'].map(step => (
+                  <span key={step} className="floating-ui px-4 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] tracking-widest font-bold uppercase text-purple-300">{step}</span>
+                ))}
+              </div>
+            </div>
+            <img 
+              src={img1} 
+              alt="Design Flow" 
+              className="absolute right-[-10%] bottom-[-5%] w-2/3 grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-80 transition-all duration-1000 rotate-2 group-hover:rotate-0 scale-110"
             />
           </div>
+
+          {/* Metric/Quirky Card */}
+          <div className="glass-card md:col-span-4 bg-purple-950/20 border border-purple-500/10 rounded-[3rem] p-12 flex flex-col justify-between overflow-hidden relative group">
+            <div className="text-purple-400 font-mono text-[10px] uppercase tracking-widest">SYSTEM_CHECK</div>
+            <div className="relative z-10">
+              <span className="text-8xl font-black italic text-white tracking-tighter">0.3s</span>
+              <p className="text-gray-500 text-xs mt-2 uppercase tracking-[0.2em] font-light italic">Average time to <br /> establish user trust.</p>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-purple-500/20 blur-[60px] rounded-full group-hover:scale-125 transition-transform duration-700" />
+          </div>
+
+          {/* Process Section HUD */}
+          <div className="reveal-on-scroll md:col-span-12 mt-6 bg-[#0c0812] border border-white/5 rounded-[3rem] p-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+              <div>
+                <img 
+                  src={img2} 
+                  className="rounded-[2.5rem] border border-white/10 shadow-2xl filter brightness-90 hover:brightness-100 transition-all duration-700"
+                  alt="User Journey"
+                />
+              </div>
+              <div className="space-y-10">
+                <span className="text-fuchsia-500 font-mono text-xs uppercase tracking-[0.4em]">The Design HUD</span>
+                <h3 className="text-5xl font-serif italic mb-6">Empathy-Driven <br /><span className="text-white not-italic font-black tracking-tighter uppercase">Framework.</span></h3>
+                <div className="space-y-6">
+                  {[
+                    { t: "Human Research", d: "Deep diving into persona psychology." },
+                    { t: "Iterative Testing", d: "Breaking the design to build it better." },
+                    { t: "Dev Sync", d: "Seamless handoff for pixel-perfect code." }
+                  ].map((s, i) => (
+                    <div key={i} className="group border-l border-white/10 pl-6 hover:border-purple-500 transition-colors">
+                      <h5 className="text-lg font-bold group-hover:text-purple-400 transition-colors">{s.t}</h5>
+                      <p className="text-gray-500 text-sm font-light leading-relaxed">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Content Section 2: Our Approach to UI/UX */}
-        <div ref={section2Ref} className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16 bg-purple-50 rounded-b-xl">
-          <div ref={section2ImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={img2}
-              alt="User Journey Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=User+Journey+Image"; }} // Fallback
-            />
-          </div>
-          <div className="md:w-1/2 text-gray-800">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              A User-Centered Approach to Design
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              Our design philosophy is rooted in understanding your users. We conduct thorough research to identify their needs, behaviors, and pain points, ensuring every design decision is informed by real-world insights. This user-centered approach results in products that are not only beautiful but also highly functional and enjoyable to use.
-            </p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Empathy-Driven Design Thinking</li>
-              <li>Iterative Design & Feedback Loops</li>
-              <li>Focus on Accessibility & Inclusivity</li>
-              <li>Seamless Handoff to Development Teams</li>
-              <li>Continuous Improvement Based on Analytics</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Call to Action or Additional Info */}
-        <div ref={ctaRef} className="paraFont-900 bg-gradient-to-t from-purple-950 to-purple-300 text-white p-8 md:p-12 lg:p-16 text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4">Ready to create an exceptional user experience?</h3>
-          <p className="text-lg mb-6">
-            Let's design a digital product that truly resonates with your audience and achieves your business goals.
-          </p>
-          <button onClick={()=>{navigate('/contactus')}}
-          className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 hover:text-purple-900 transition-colors duration-300">
-            Start Your UI/UX Project
+        {/* --- LUXURY CTA --- */}
+        <footer className="reveal-on-scroll text-center py-32 relative rounded-[4rem] bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-[1px] bg-gradient-to-r from-transparent via-purple-500 to-transparent"></div>
+          
+          <h2 className="text-5xl md:text-7xl font-serif italic mb-12">
+            Ready to <span className="not-italic font-black text-white underline decoration-purple-500 decoration-1 underline-offset-[14px]">Transcend?</span>
+          </h2>
+          
+          <button
+            onClick={() => navigate('/contactus')}
+            className="group relative px-20 py-6 bg-transparent overflow-hidden"
+          >
+            <span className="relative z-10 text-white font-mono tracking-[0.6em] text-[10px] uppercase group-hover:text-black transition-colors duration-500">
+                Initiate Project
+            </span>
+            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-[expo.inOut]"></div>
+            <div className="absolute inset-0 border border-white/20"></div>
           </button>
-        </div>
+        </footer>
       </div>
     </div>
   );

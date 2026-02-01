@@ -1,184 +1,193 @@
-// src/components/Services.jsx
-
-import React, { useRef } from 'react'; // Import useRef
+import React, { useRef, useState, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { Autoplay, Navigation, EffectCoverflow, Pagination } from 'swiper/modules';
 
-// Import Swiper styles (These are essential for Swiper's core functionality and layout)
 import 'swiper/css';
-import 'swiper/css/pagination';
 import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/effect-coverflow';
 
-/**
- * Service data array. This is a clean, structured way to manage your content.
- * Using a simple object for each service with a title, description, and SVG path.
- */
 const serviceData = [
-  {
-    title: 'Custom Website Development',
-    description: 'Crafting bespoke web solutions tailored to your unique business needs and goals.',
-    iconPath: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
+  { 
+    title: 'Custom\nWeb Dev', 
+    description: 'Bespoke digital ecosystems engineered for high-performance scale and speed.', 
+    iconPath: 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4', 
+    bgColor: 'bg-[#FF5F1F]', // Neon Orange
+    textColor: 'text-black' 
   },
-  {
-    title: 'Backend Development',
-    description: 'Building robust and scalable server-side logic and databases to power your applications.',
-    iconPath: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065zM15 12a3 3 0 11-6 0 3 3 0 016 0z',
+  { 
+    title: 'Backend\nLogic', 
+    description: 'Robust server-side architecture designed for millisecond latency.', 
+    iconPath: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066...', 
+    bgColor: 'bg-[#0047AB]', // Cobalt Blue
+    textColor: 'text-white' 
   },
-  {
-    title: 'Frontend Development',
-    description: 'Creating engaging and intuitive user interfaces that provide seamless and enjoyable experiences.',
-    iconPath: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
+  { 
+    title: 'Frontend\nArtistry', 
+    description: 'Immersive interfaces where human emotion meets digital logic.', 
+    iconPath: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z', 
+    bgColor: 'bg-[#00FA9A]', // Spring Green
+    textColor: 'text-black' 
   },
-  {
-    title: 'React Development',
-    description: 'Leveraging the power of React.js to build fast, interactive, and modern single-page applications.',
-    iconPath: 'M13 10V3L4 14h7v7l9-11h-7z',
-  },
-  {
-    title: 'UI/UX Design',
-    description: 'Crafting intuitive and engaging user interfaces (UI) and user experiences (UX) that captivate your audience.',
-    iconPath: 'M9.75 17L9 20l-1 1h6l-1-1l-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
-  },
-  {
-    title: 'Software Maintenance & Support',
-    description: 'Ensuring your software runs smoothly with ongoing maintenance, updates, and dedicated support.',
-    iconPath: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4',
-  },
-  {
-    title: 'SEO Optimization',
-    description: 'Increase your online visibility and attract more organic traffic with our comprehensive SEO services.',
-    iconPath: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
-  },
-  {
-    title: 'Advertising',
-    description: 'Drive immediate, targeted traffic to your website with expertly managed Google advertising campaigns.',
-    iconPath: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+  { 
+    title: 'UI/UX\nMastery', 
+    description: 'Orchestrating digital journeys through empathy and pixel-precision.', 
+    iconPath: 'M9.75 17L9 20l-1 1h6l-1-1l-.75-3...', 
+    bgColor: 'bg-[#1A1A1A]', // Obsidian
+    textColor: 'text-white' 
   },
 ];
 
-/**
- * Reusable component for the SVG icons.
- * This keeps the main JSX cleaner and makes icons easier to manage.
- */
-const ServiceIcon = ({ path }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    className="h-10 w-10 text-purple-700 mb-6 transition-transform duration-500 group-hover:scale-110"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path strokeLinecap="round" strokeLinejoin="round" d={path} />
-  </svg>
-);
-
-/**
- * The main Services component, featuring a responsive Swiper carousel.
- */
 const Services = () => {
-  // 1. Create refs for the custom navigation buttons
+  const [swiper, setSwiper] = useState(null);
   const prevRef = useRef(null);
   const nextRef = useRef(null);
 
+  useEffect(() => {
+    if (swiper && prevRef.current && nextRef.current) {
+      swiper.params.navigation.prevEl = prevRef.current;
+      swiper.params.navigation.nextEl = nextRef.current;
+      swiper.navigation.destroy();
+      swiper.navigation.init();
+      swiper.navigation.update();
+    }
+  }, [swiper]);
+
   return (
-    <section className="bg-white py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Section Header */}
-        <header className="text-center mb-16">
-          <h2 className="text-5xl font-extrabold text-gray-900 leading-tight">
-            Our <span className="text-purple-600">Cutting-Edge</span> Services
-          </h2>
-          <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            From concept to deployment, we deliver powerful digital solutions that drive growth.
-          </p>
+    <section className="relative bg-[#F0F0F0] py-24 md:py-40 px-6 overflow-hidden">
+      
+      {/* Background Kinetic Detail */}
+      <div className="absolute top-0 left-0 w-full h-full opacity-[0.03] pointer-events-none select-none overflow-hidden flex items-center">
+        <span className="text-[40vh] font-black whitespace-nowrap leading-none uppercase tracking-tighter">
+          Capabilities • Capabilities • Capabilities •
+        </span>
+      </div>
+
+      <div className="max-w-[1600px] mx-auto relative z-10">
+        
+        {/* Header Section - Modern Condensed */}
+        <header className="mb-20 grid grid-cols-1 lg:grid-cols-12 gap-6 items-end">
+          <div className="lg:col-span-8">
+            <span className="text-black font-mono text-xs tracking-[0.5em] uppercase mb-4 block font-black">
+              // Service Portfolio
+            </span>
+            <h2 className="text-[clamp(3rem,10vw,8rem)] font-black text-black tracking-tighter leading-[0.8]">
+              CRAFTING <br /> 
+              <span className="text-transparent" style={{ WebkitTextStroke: "1.5px black" }}>SOLUTIONS.</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-4 border-l-4 border-black pl-6 pb-2 hidden lg:block">
+            <p className="text-sm font-bold text-gray-600 uppercase tracking-widest leading-relaxed">
+              [ Engine_v.2.0 ] <br />
+              Deploying high-frequency digital assets for global enterprises.
+            </p>
+          </div>
         </header>
 
-        {/* Swiper Carousel Component */}
-        <Swiper
-          spaceBetween={30}
-          slidesPerView={1}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-          }}
-          loop={true}
-          pagination={{
-            clickable: true,
-            el: '.swiper-pagination-custom',
-            // Use a render function to apply Tailwind CSS classes to the bullets
-            renderBullet: function (index, className) {
-                return `<span class="${className} !bg-purple-300 opacity-90 transition-all duration-300 w-2.5 h-2.5 rounded-full mx-2 !m-0 !mr-2 swiper-pagination-bullet-active:!bg-purple-600 swiper-pagination-bullet-active:w-3.5 swiper-pagination-bullet-active:h-3.5 swiper-pagination-bullet-active:shadow-md"></span>`;
-            },
-          }}
-          // 2. Set the navigation to use the refs instead of selectors
-          navigation={{
-            prevEl: prevRef.current,
-            nextEl: nextRef.current,
-          }}
-          // 3. Use `onInit` to ensure the refs are available when the Swiper instance is created
-          onInit={(swiper) => {
-            swiper.params.navigation.prevEl = prevRef.current;
-            swiper.params.navigation.nextEl = nextRef.current;
-            swiper.navigation.init();
-            swiper.navigation.update();
-          }}
-          modules={[Autoplay, Pagination, Navigation]}
-          className="relative pb-16"
-          breakpoints={{
-            640: {
-              slidesPerView: 2,
-              spaceBetween: 20,
-            },
-            1024: {
-              slidesPerView: 3,
-              spaceBetween: 40,
-            },
-          }}
-        >
-          {/* Map through the service data to create Swiper slides */}
-          {serviceData.map((service, index) => (
-            <SwiperSlide key={index}>
-              <div className="bg-white border border-gray-200 rounded-2xl p-8 flex flex-col items-center text-center h-full transition-all duration-300 transform hover:scale-105 hover:shadow-2xl cursor-pointer group">
-                <ServiceIcon path={service.iconPath} />
-                <h3 className="text-3xl font-bold text-gray-900 mb-3 leading-snug">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 flex-grow text-lg">{service.description}</p>
-              </div>
-            </SwiperSlide>
-          ))}
-
-          {/* 4. Attach the refs to the custom navigation buttons */}
-          <div
-            ref={prevRef} // Attach ref to the button element
-            className="swiper-button-prev-custom absolute top-1/2 -translate-y-1/2 left-4 z-20 flex items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-300 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:shadow-lg"
+        {/* Swiper Wrapper */}
+        <div className="relative group perspective-[2000px]">
+          <Swiper
+            onSwiper={setSwiper}
+            modules={[Autoplay, Navigation, EffectCoverflow, Pagination]}
+            effect="coverflow"
+            grabCursor={true}
+            centeredSlides={false}
+            slidesPerView={1}
+            spaceBetween={40}
+            loop={true}
+            coverflowEffect={{
+              rotate: 5,
+              stretch: 0,
+              depth: 100,
+              modifier: 2,
+              slideShadows: false,
+            }}
+            breakpoints={{
+              768: { slidesPerView: 2 },
+              1200: { slidesPerView: 3 },
+            }}
+            pagination={{ clickable: true, el: '.custom-pagination', type: 'bullets' }}
+            className="!overflow-visible"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-          </div>
-          <div
-            ref={nextRef} // Attach ref to the button element
-            className="swiper-button-next-custom absolute top-1/2 -translate-y-1/2 right-4 z-20 flex items-center justify-center w-12 h-12 rounded-full cursor-pointer transition-all duration-300 bg-gray-100 text-gray-700 border border-gray-300 hover:bg-purple-600 hover:text-white hover:border-purple-600 hover:shadow-lg"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </div>
+            {serviceData.map((service, index) => (
+              <SwiperSlide key={index}>
+                <div className={`group h-[500px] ${service.bgColor} ${service.textColor} border-4 border-black rounded-[1rem] p-12 flex flex-col justify-between transition-all duration-500 shadow-[15px_15px_0px_0px_#000] hover:shadow-[5px_5px_0px_0px_#000] hover:translate-x-[10px] hover:translate-y-[10px]`}>
+                  
+                  <div className="flex justify-between items-start">
+                    <div className={`w-14 h-14 border-2 border-current flex items-center justify-center rounded-full group-hover:rotate-12 transition-transform duration-500`}>
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5" className="h-6 w-6">
+                        <path strokeLinecap="round" strokeLinejoin="round" d={service.iconPath} />
+                      </svg>
+                    </div>
+                    <span className="font-mono text-xs font-black tracking-tighter opacity-50">#00{index + 1}</span>
+                  </div>
 
-          {/* Custom Pagination container - Positioned at the bottom center */}
-          <div className="swiper-pagination-custom absolute bottom-4 inset-x-0 flex justify-center items-center z-10"></div>
-        </Swiper>
-        
-        {/* Footer/Call to Action */}
-        <footer className="mt-20 text-center text-gray-500">
-          <p className="text-lg font-medium">
-            Ready to build something amazing? <a href="#contact" className="text-purple-600 hover:text-purple-800 transition-colors font-bold">Let's talk.</a>
-          </p>
-        </footer>
+                  <div>
+                    <h3 className="text-4xl md:text-5xl font-black mb-6 tracking-tighter leading-none whitespace-pre-line uppercase italic">
+                      {service.title}
+                    </h3>
+                    <p className="font-bold leading-tight text-lg opacity-80 max-w-[250px]">
+                      {service.description}
+                    </p>
+                  </div>
+                  
+                  <div className="pt-6 border-t-2 border-current w-full flex justify-between items-center opacity-30">
+                    <span className="text-[10px] font-mono tracking-widest uppercase font-black">Architecture_Index</span>
+                    <div className="w-12 h-1 bg-current rounded-full" />
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+
+          {/* --- MINIMAL HUD DOCK --- */}
+          <div className="flex flex-col items-center mt-24 gap-10">
+            <div className="flex items-center gap-12 bg-black p-3 rounded-full shadow-2xl">
+              
+              <button 
+                ref={prevRef}
+                className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-all duration-300 z-50"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <div className="custom-pagination flex gap-3 px-4" />
+
+              <button 
+                ref={nextRef}
+                className="w-14 h-14 rounded-full bg-white text-black flex items-center justify-center hover:scale-110 transition-all duration-300 z-50"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+
+            </div>
+
+            <div className="flex items-center gap-4 group cursor-crosshair">
+               <div className="w-2 h-2 bg-black rounded-full animate-ping" />
+               <span className="text-[10px] font-mono tracking-[0.6em] font-black uppercase text-black/40">Status: Protocols_Active</span>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <style>{`
+        .custom-pagination .swiper-pagination-bullet {
+          background: rgba(255,255,255,0.3) !important;
+          opacity: 1 !important;
+          width: 6px;
+          height: 6px;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-pagination .swiper-pagination-bullet-active {
+          background: white !important;
+          width: 30px;
+          border-radius: 10px;
+        }
+      `}</style>
     </section>
   );
 };

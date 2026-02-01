@@ -38,7 +38,7 @@ const App = () => {
   }, []);
   return (
     <div className="">
-       {loading && <SiteLoader />} Conditionally render the loader
+       {loading && <SiteLoader />}
       <Router>
         <ScrollToTop/>
         <Navbar />

@@ -9,197 +9,154 @@ gsap.registerPlugin(ScrollTrigger);
 
 const WebDevelopment = () => {
   const navigate = useNavigate();
+  const containerRef = useRef(null);
   const titleRef = useRef(null);
-  const subtitleRef = useRef(null);
-  const heroTextRef = useRef(null);
   const heroImageRef = useRef(null);
-  const section2Ref = useRef(null);
-  const section2ImageRef = useRef(null);
-  const ctaRef = useRef(null);
+  const floatingBlobRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1.2, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      // Entrance Animation
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    // Animate H1 + subtitle + Content Section 1 together on page load
-    tl.fromTo(
-      titleRef.current,
-      { y: -100, opacity: 0 },
-      { y: 0, opacity: 1 }
-    )
-      .fromTo(
-        subtitleRef.current,
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, ease: 'back.out(1.7)' },
-        '-=0.8'
-      )
-      .fromTo(
-        heroTextRef.current,
-        { x: -100, opacity: 0, scale: 0.9 },
-        { x: 0, opacity: 1, scale: 1 },
-        '-=0.8'
-      )
-      .fromTo(
-        heroImageRef.current,
-        { x: 100, opacity: 0, scale: 0.9 },
-        { x: 0, opacity: 1, scale: 1 },
-        '-=1'
-      );
+      tl.from(".reveal", {
+        y: 100,
+        opacity: 0,
+        duration: 1.4,
+        stagger: 0.2
+      })
+      .from(heroImageRef.current, {
+        scale: 0.8,
+        opacity: 0,
+        duration: 1.2
+      }, "-=1");
 
-    // Section 2 (scroll-triggered)
-    gsap.fromTo(
-      section2Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section2Ref.current,
-          start: 'top 80%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+      // Floating Background Animation
+      gsap.to(".blob", {
+        y: "random(-20, 20)",
+        x: "random(-20, 20)",
+        repeat: -1,
+        yoyo: true,
+        duration: 3,
+        ease: "sine.inOut"
+      });
 
-    gsap.fromTo(
-      section2ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section2ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+      // Scroll Animations for Sections
+      gsap.utils.toArray(".scroll-section").forEach((section) => {
+        gsap.from(section, {
+          scrollTrigger: {
+            trigger: section,
+            start: "top 80%",
+            toggleActions: "play none none none",
+          },
+          opacity: 0,
+          y: 50,
+          duration: 1,
+        });
+      });
+    }, containerRef);
 
-    // CTA
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-200 min-h-screen py-2 px-4 sm:px-6 lg:px-8 mt-15">
-      <div className="max-w-[90vw] mx-auto rounded-xl shadow-2xl overflow-hidden bg-white">
-        {/* Hero Section */}
-        <div className="paraFont-900 relative p-4 md:p-6 lg:p-8 text-center bg-gradient-to-b from-purple-950 to-purple-300 text-white">
-          <h1
-            ref={titleRef}
-            className=" text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight"
-          >
-            Custom Website Development
-          </h1>
-          <p
-            ref={subtitleRef}
-            className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto text-purple-950"
-          >
-            Crafting bespoke web solutions tailored to your unique brand and business goals.
-          </p>
-        </div>
+    <div ref={containerRef} className="relative bg-[#0f0715] text-white min-h-screen overflow-hidden font-sans">
+      {/* Quirky Background Blobs */}
+      <div className="blob absolute top-20 -left-20 w-72 h-72 bg-purple-600/30 rounded-full blur-[120px]" />
+      <div className="blob absolute bottom-20 -right-20 w-96 h-96 bg-fuchsia-600/20 rounded-full blur-[120px]" />
 
-        {/* Content Section 1 */}
-        <div className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          <div ref={heroTextRef} className="md:w-1/2 text-gray-800">
-            <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Build a Unique Online Presence That Converts
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-20">
+        
+        {/* --- Hero Section --- */}
+        <header className="text-center mb-24">
+          <div className="overflow-hidden">
+            <h1 ref={titleRef} className="reveal text-5xl md:text-8xl font-black tracking-tighter mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-purple-500">
+              CUSTOM WEB <br /> SOLUTIONS
+            </h1>
+          </div>
+          <p className="reveal text-purple-200/70 text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed">
+            We don't just build websites; we craft digital playgrounds that convert visitors into lifelong fans.
+          </p>
+        </header>
+
+        {/* --- Content Section 1: Hero Image & Intro --- */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
+          <div className="order-2 lg:order-1">
+            <div ref={heroImageRef} className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-fuchsia-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+              <img
+                src={uiux3img}
+                alt="Web Design"
+                className="relative rounded-2xl shadow-2xl grayscale hover:grayscale-0 transition-all duration-500 border border-white/10"
+              />
+            </div>
+          </div>
+          
+          <div className="order-1 lg:order-2 space-y-8">
+            <h2 className="text-4xl font-serif italic text-white leading-tight">
+              Build a presence that <span className="text-purple-400">actually</span> works.
             </h2>
-            <p className="mb-4 text-lg leading-relaxed">
-              In today’s digital world, a generic site won’t suffice. Our custom web development delivers a branded, goal-focused experience that attracts users and grows conversions. From performance to design, we create solutions built to last.
+            <p className="text-gray-400 text-lg leading-relaxed">
+              In a sea of templates, be a custom masterpiece. We blend technical SEO with high-end aesthetics to ensure your brand stands out in the noise.
             </p>
-            <p className="text-purple-900 font-semibold mb-2">What We Offer:</p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Bespoke Design & Mobile-Friendly Build</li>
-              <li>Custom CMS for Effortless Updates</li>
-              <li>SEO-Optimized Structure for Visibility</li>
-              <li>Scalable Architecture for Future Growth</li>
-              <li>Secure E-commerce & Payment Integration</li>
-            </ul>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
+              {['Bespoke Design', 'SEO Optimized', 'Scalable Code', 'E-commerce'].map((item) => (
+                <div key={item} className="flex items-center space-x-2 bg-white/5 border border-white/10 p-4 rounded-xl">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full shadow-[0_0_10px_#a855f7]" />
+                  <span className="text-sm font-medium">{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
+        </section>
 
-          <div ref={heroImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={uiux3img}
-              alt="Custom Web Development"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = 'https://placehold.co/600x400/8B5CF6/ffffff?text=Web+Dev+Image';
-              }}
-            />
+        {/* --- Content Section 2: Process (The Quirky Part) --- */}
+        <section className="scroll-section bg-white/5 backdrop-blur-md border border-white/10 rounded-[3rem] p-8 md:p-16 mb-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-6">
+              <span className="px-4 py-1 rounded-full border border-purple-500/50 text-purple-400 text-xs tracking-widest uppercase">The Strategy</span>
+              <h3 className="text-4xl font-bold">Collaborative Magic</h3>
+              <p className="text-gray-400 leading-relaxed">
+                Our process is a dialogue, not a monologue. We iterate fast, break things (safely), and rebuild them better until your vision is perfectly pixel-ready.
+              </p>
+              <ul className="space-y-4">
+                {['Discovery & Brainstorming', 'UI/UX Prototyping', 'Modern Tech Stack Build', 'Go-Live & Support'].map((step, i) => (
+                  <li key={i} className="flex items-start gap-4 group">
+                    <span className="text-purple-500 font-mono font-bold">0{i+1}.</span>
+                    <span className="group-hover:text-purple-300 transition-colors">{step}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="relative">
+              <img
+                src={Frontendimg}
+                alt="Process"
+                className="rounded-3xl shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500"
+              />
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* Content Section 2 */}
-        <div
-          ref={section2Ref}
-          className="flex noto-serif flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16 bg-purple-50 rounded-b-xl"
-        >
-          <div ref={section2ImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={Frontendimg}
-              alt="Web Development Process"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = 'https://placehold.co/600x400/8B5CF6/ffffff?text=Web+Process+Image';
-              }}
-            />
+        {/* --- Call to Action --- */}
+        <section className="scroll-section text-center py-20 relative rounded-[3rem] overflow-hidden bg-gradient-to-br from-purple-900 to-indigo-950">
+          <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+          <div className="relative z-10">
+            <h2 className="text-3xl md:text-5xl font-bold mb-8 px-4">
+              Ready to break the internet <br /> (in a good way)?
+            </h2>
+            <button
+              onClick={() => navigate('/contactus')}
+              className="group relative inline-flex items-center justify-center px-10 py-4 font-bold text-white transition-all duration-200 bg-purple-600 rounded-full hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-600"
+            >
+              Get a Free Consultation
+              <svg className="w-5 h-5 ml-2 -mr-1 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </button>
           </div>
-          <div className="md:w-1/2 text-gray-800">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Our Collaborative Web Development Process
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              We work side-by-side with you from idea to deployment. Our agile process means flexibility at every stage—ensuring your website truly reflects your goals and brand values.
-            </p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Discovery & Planning to define goals</li>
-              <li>Creative Design for optimal experience</li>
-              <li>Robust Development with quality checks</li>
-              <li>Deployment with smooth go-live</li>
-              <li>Reliable Maintenance & Support</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Call to Action */}
-        <div
-          ref={ctaRef}
-          className="paraFont-900 bg-gradient-to-t from-purple-950 to-purple-300 text-white p-8 md:p-12 lg:p-16 text-center"
-        >
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4">
-            Ready to build your dream website?
-          </h3>
-          <p className="text-lg mb-6">
-            Let’s discuss your goals and create a high-converting digital presence.
-          </p>
-          <button
-            onClick={() => {
-              navigate('/contactus');
-            }}
-            className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 hover:text-purple-900 transition-colors duration-300"
-          >
-            Get a Free Consultation
-          </button>
-        </div>
+        </section>
       </div>
     </div>
   );

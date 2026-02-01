@@ -7,159 +7,157 @@ import CTA from '../Common/CTA';
 gsap.registerPlugin(ScrollTrigger);
 
 const ChooseUs = () => {
-  const navigate = useNavigate();
-  // Refs for GSAP animations
-  const headingRef = useRef(null);
-  const introTextRef = useRef(null);
-  const reasonsGridRef = useRef(null);
-  const ctaRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    // Animation for the main heading and intro text
-    const tl = gsap.timeline({ defaults: { duration: 1, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    tl.fromTo(
-      headingRef.current,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1 }
-    )
-    .fromTo(
-      introTextRef.current,
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1 },
-      '-=0.5' // Stagger slightly after the heading
-    );
+      // Entrance sequence
+      tl.from(".reveal-y", { y: 100, opacity: 0, stagger: 0.2, duration: 1.5 })
+        .from(".bento-card", { 
+          scale: 0.9, 
+          opacity: 0, 
+          stagger: 0.1, 
+          duration: 1.2,
+          ease: "back.out(1.2)" 
+        }, "-=1");
 
-    // Scroll-triggered animation for the reasons grid
-    gsap.fromTo(
-      reasonsGridRef.current.children, // Animate each child of the grid
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 0.8,
-        ease: 'power2.out',
-        stagger: 0.2, // Stagger the animation of each reason card
+      // Floating parallax blobs
+      gsap.to(".bg-blob", {
+        y: -100,
+        x: 50,
         scrollTrigger: {
-          trigger: reasonsGridRef.current,
-          start: 'top 80%', // When the top of the grid enters the viewport
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+          trigger: containerRef.current,
+          scrub: 2,
+        }
+      });
+    }, containerRef);
 
-    // Scroll-triggered animation for the CTA section
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0, scale: 0.95 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-
+    return () => ctx.revert();
   }, []);
 
+  const reasons = [
+    { 
+      t: "Expertise & Innovation", 
+      d: "Our veterans engineer future-proof architectures using the latest tech stacks.", 
+      i: "💡", 
+      size: "md:col-span-8",
+      tag: "// Tech_Pioneer"
+    },
+    { 
+      t: "Custom Solutions", 
+      d: "Tailored DNA for your brand. No templates, just bespoke code.", 
+      i: "✨", 
+      size: "md:col-span-4",
+      tag: "// Unique_ID"
+    },
+    { 
+      t: "Maximum ROI", 
+      d: "Conversion-optimized designs that turn traffic into revenue.", 
+      i: "📈", 
+      size: "md:col-span-4",
+      tag: "// Growth_Sync"
+    },
+    { 
+      t: "Client-Centric", 
+      d: "Transparent communication with direct access to our lead engineers.", 
+      i: "🤝", 
+      size: "md:col-span-8",
+      tag: "// Human_Interface"
+    },
+    { 
+      t: "Scalable & Secure", 
+      d: "Military-grade encryption and elastic scaling built into every core.", 
+      i: "🔒", 
+      size: "md:col-span-6",
+      tag: "// Iron_Clad"
+    },
+    { 
+      t: "Full-Spectrum", 
+      d: "From design to cloud maintenance, we are your 360° digital partner.", 
+      i: "✅", 
+      size: "md:col-span-6",
+      tag: "// All_In_One"
+    }
+  ];
+
   return (
-    <div className=" bg-gradient-to-br paraFont-900 from-indigo-50 to-purple-100 min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+    <div ref={containerRef} className="relative bg-[#050208] text-[#e0e0e0] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- PREMIUM BACKGROUND ELEMENTS --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      <div className="bg-blob absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] bg-indigo-600/10 blur-[150px] rounded-full" />
+      <div className="bg-blob absolute bottom-[-10%] right-[-5%] w-[40vw] h-[40vw] bg-purple-600/10 blur-[120px] rounded-full" />
 
-        {/* Header Section */}
-        <section className="text-center paraFont-900 mb-16">
-          <h1 ref={headingRef} className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-purple-800 mb-6 leading-tight">
-            Why Partner with WebKraftery?
+      {/* Background Kinetic Text */}
+      <div className="absolute top-40 left-0 whitespace-nowrap opacity-[0.01] pointer-events-none select-none font-black text-[20vw] leading-none italic uppercase">
+        WHY US • THE ADVANTAGE • 
+      </div>
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32">
+        
+        {/* --- HEADER SECTION --- */}
+        <header className="text-center mb-32">
+          <div className="reveal-y inline-block px-4 py-1 mb-8 border border-indigo-500/30 rounded-full bg-indigo-500/5 backdrop-blur-md">
+            <span className="text-indigo-400 text-[10px] font-bold tracking-[0.4em] uppercase font-mono italic">
+              // Partner with Excellence
+            </span>
+          </div>
+          <h1 className="reveal-y text-5xl md:text-[110px] font-black leading-[0.8] tracking-tighter mb-10 italic">
+            THE <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-500 not-italic font-serif font-light tracking-normal lowercase">
+              advantage.
+            </span>
           </h1>
-          <p ref={introTextRef} className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-            Choosing the right digital partner is crucial for your business success. At webkraftery, we combine expertise, innovation, and a client-first approach to deliver unparalleled web solutions.
+          <p className="reveal-y max-w-2xl mx-auto text-gray-500 text-lg md:text-xl font-light leading-relaxed italic">
+            Choosing a partner is choosing a future. At WebKraftery, we combine architectural mastery with client-first empathy to build something unstoppable.
           </p>
+        </header>
+
+        {/* --- BENTO REASONS GRID --- */}
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+          {reasons.map((item, idx) => (
+            <div 
+              key={idx} 
+              className={`bento-card ${item.size} group relative bg-white/[0.02] border border-white/5 rounded-[3rem] p-10 hover:bg-white/[0.04] hover:border-indigo-500/30 transition-all duration-700 overflow-hidden`}
+            >
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-12">
+                  <div className="text-5xl grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500">
+                    {item.i}
+                  </div>
+                  <span className="text-[10px] font-mono text-indigo-500/50 tracking-widest uppercase">
+                    {item.tag}
+                  </span>
+                </div>
+                
+                <h3 className="text-3xl font-serif italic mb-4 group-hover:text-white transition-colors">
+                  {item.t}
+                </h3>
+                <p className="text-gray-500 text-base font-light leading-relaxed max-w-md">
+                  {item.d}
+                </p>
+              </div>
+
+              {/* HUD Decoration */}
+              <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-indigo-500/5 blur-[60px] rounded-full group-hover:bg-indigo-500/10 transition-colors" />
+            </div>
+          ))}
         </section>
 
-        {/* Reasons Grid Section */}
-        <section ref={reasonsGridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 mb-16">
-          {/* Reason 1: Unmatched Expertise */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">💡</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Expertise & Innovation</span>
-              Cutting-Edge Web Development
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              Our team comprises seasoned professionals in web development, UI/UX design, and digital marketing. We leverage the latest technologies and innovative strategies to build future-proof solutions that drive your business forward.
-            </p>
-          </div>
+        {/* --- PREMIUM CTA --- */}
+        <div className="reveal-y bento-card relative rounded-[4rem] overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/20 to-transparent pointer-events-none" />
+          <CTA />
+        </div>
 
-          {/* Reason 2: Tailored Solutions */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">✨</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Custom Solutions</span>
-              Designed for Your Success
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              We understand that every business is unique. We provide custom web solutions tailored precisely to your specific needs, ensuring your online presence perfectly reflects your brand and achieves your unique objectives.
-            </p>
-          </div>
+      </div>
 
-          {/* Reason 3: Measurable Results & ROI */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">📈</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Results-Driven Approach</span>
-              Maximizing Your ROI
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              Our focus is on delivering tangible results. From SEO optimization to conversion-focused design, we implement strategies that boost your online visibility, attract more customers, and generate a significant return on investment (ROI).
-            </p>
-          </div>
-
-          {/* Reason 4: Client-Centric Partnership */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">🤝</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Client-Centric Partnership</span>
-              Your Success is Our Priority
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              We believe in building long-term partnerships. Our transparent communication, dedicated support, and collaborative process ensure you are always informed and involved, making your journey with us seamless and productive.
-            </p>
-          </div>
-
-          {/* Reason 5: Scalability & Security */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">🔒</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Scalable & Secure Solutions</span>
-              Built for Growth
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              We engineer scalable web applications and robust websites that grow with your business. Security is paramount; we implement industry best practices to protect your data and ensure a safe online environment.
-            </p>
-          </div>
-
-          {/* Reason 6: Comprehensive Service Portfolio */}
-          <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-1 text-center border border-purple-100">
-            <div className="text-6xl mb-4 text-purple-600">✅</div> {/* Icon */}
-            <h3 className="text-2xl font-bold text-purple-700 mb-3">
-              <span className="block text-indigo-700">Full-Spectrum Services</span>
-              Your One-Stop Digital Partner
-            </h3>
-            <p className="text-gray-700 leading-relaxed">
-              From responsive website design and e-commerce development to ongoing maintenance and digital advertising, webkraftery offers a complete suite of web services under one roof, simplifying your digital journey.
-            </p>
-          </div>
-        </section>
-
-        {/* Call to Action Section */}
-        <CTA/>
-
+      {/* --- QUIRKY HUD ELEMENT --- */}
+      <div className="fixed bottom-10 left-10 hidden lg:flex items-center gap-4 bg-white/5 backdrop-blur-md border border-white/10 px-5 py-2 rounded-full z-50">
+        <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse shadow-[0_0_10px_#6366f1]" />
+        <span className="text-[10px] font-mono tracking-[0.3em] text-gray-400 uppercase">Alliance_Sync_Active</span>
       </div>
     </div>
   );

@@ -5,151 +5,144 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const Vision = () => {
-  // Refs for GSAP animations
-  const headingRef = useRef(null);
-  const missionRef = useRef(null);
-  const visionRef = useRef(null);
-  const valuesRef = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    // Animation for the main heading
-    gsap.fromTo(
-      headingRef.current,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }
-    );
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    // Scroll-triggered animations for each section
-    const sections = [missionRef, visionRef, valuesRef];
+      // Entrance sequence
+      tl.from(".reveal-h1", { y: 100, opacity: 0, duration: 1.5 })
+        .from(".reveal-sub", { y: 40, opacity: 0, duration: 1 }, "-=1")
+        .from(".bg-blur-blob", { opacity: 0, scale: 0.5, duration: 2 }, "-=1.5");
 
-    sections.forEach((sectionRef, index) => {
-      gsap.fromTo(
-        sectionRef.current,
-        { y: 80, opacity: 0, scale: 0.95 },
-        {
-          y: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 1,
-          ease: 'power2.out',
+      // Scroll Reveal for Mission/Vision panels
+      gsap.utils.toArray(".panel-reveal").forEach((panel) => {
+        gsap.from(panel, {
           scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 80%', // When the top of the section enters 80% of the viewport
-            toggleActions: 'play none none none', // Play animation once
-            // Uncomment the line below for debugging ScrollTrigger
-            // markers: true,
+            trigger: panel,
+            start: "top 85%",
           },
-        }
-      );
-    });
+          y: 60,
+          opacity: 0,
+          duration: 1.2,
+          ease: "power4.out"
+        });
+      });
 
+      // Values Stagger
+      gsap.from(".value-tile", {
+        scrollTrigger: {
+          trigger: ".values-grid",
+          start: "top 80%",
+        },
+        scale: 0.9,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 0.8,
+        ease: "back.out(1.7)"
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="paraFont-900 bg-gradient-to-br from-indigo-50 to-purple-100 min-h-screen font-sans">
-      <div className="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+    <div ref={containerRef} className="relative bg-[#050208] text-[#e0e0e0] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- COSMIC BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      <div className="bg-blur-blob absolute top-[-10%] left-[-5%] w-[60vw] h-[60vw] bg-violet-600/10 blur-[150px] rounded-full" />
+      <div className="bg-blur-blob absolute bottom-[-10%] right-[-5%] w-[50vw] h-[50vw] bg-cyan-600/10 blur-[120px] rounded-full" />
 
-        {/* Header Section */}
-        <section className="text-center mb-16">
-          <h1 ref={headingRef} className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-800 mb-6 leading-tight">
-            Our Mission, Vision & Core Values
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24 md:py-32">
+        
+        {/* --- HEADER SECTION --- */}
+        <header className="text-center mb-32 md:mb-48">
+          <div className="reveal-sub inline-block px-4 py-1 mb-6 border border-violet-500/30 rounded-full bg-violet-500/5 backdrop-blur-md">
+            <span className="text-violet-400 text-[10px] font-bold tracking-[0.4em] uppercase font-mono italic">
+              // The Pulse of WebKraftery
+            </span>
+          </div>
+          <h1 className="reveal-h1 text-5xl md:text-[130px] font-black leading-[0.8] tracking-tighter italic mb-10">
+            PURPOSE <br /> 
+            <span className="not-italic font-serif font-light text-transparent bg-clip-text bg-gradient-to-r from-white via-violet-200 to-cyan-400">
+              DEFINED.
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-            At webkraftery, our purpose is clear, our future is defined, and our actions are guided by unwavering principles. Discover what drives us.
+          <p className="reveal-sub max-w-2xl mx-auto text-gray-500 text-lg md:text-xl font-light leading-relaxed italic">
+            At WebKraftery, we don't just exist to code; we exist to lead the digital frontier through a focused mission and a visionary roadmap.
           </p>
-        </section>
+        </header>
 
-        {/* Our Mission Section */}
-        <section ref={missionRef} className="bg-white rounded-2xl shadow-lg p-8 md:p-12 lg:p-16 mb-16 border border-purple-100">
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="md:w-1/3 flex justify-center items-center mb-6 md:mb-0">
-              <div className="text-8xl text-indigo-600">🎯</div> {/* Mission Icon */}
-            </div>
-            <div className="md:w-2/3 text-center md:text-left">
-              <h2 className="text-3xl sm:text-4xl font-bold text-indigo-800 mb-4">
-                Our Mission: Empowering Digital Excellence
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                webkraftery's mission is to empower businesses of all sizes by providing innovative, high-quality web solutions that drive growth, enhance user engagement, and streamline operations. We are dedicated to transforming digital challenges into opportunities for our clients, ensuring their online presence is not just functional, but truly exceptional.
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                We achieve this through expert web development, strategic digital marketing, and a relentless commitment to client success.
-              </p>
-            </div>
+        {/* --- MISSION PANEL (Asymmetric Glass) --- */}
+        <section className="panel-reveal grid grid-cols-1 lg:grid-cols-12 gap-12 mb-32 items-center">
+          <div className="lg:col-span-4 flex justify-center lg:justify-start">
+             <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center bg-violet-600/10 border border-violet-500/20 rounded-[3rem] rotate-6 hover:rotate-0 transition-transform duration-700">
+                <span className="text-8xl">🎯</span>
+                <div className="absolute inset-0 animate-pulse bg-violet-500/5 rounded-[3rem] blur-2xl" />
+             </div>
+          </div>
+          <div className="lg:col-span-8 bg-white/[0.02] border border-white/5 p-10 md:p-16 rounded-[3rem] backdrop-blur-sm">
+             <span className="text-violet-500 font-mono text-[10px] uppercase tracking-[0.5em] mb-4 block">01_The Mission</span>
+             <h2 className="text-4xl md:text-6xl font-serif italic mb-6">Empowering <br /><span className="not-italic font-black text-white">Digital Excellence.</span></h2>
+             <p className="text-gray-400 text-lg font-light leading-relaxed">
+               Our mission is to arm businesses with the technical weaponry they need to dominate the online landscape. We transform complex digital challenges into high-performance opportunities, ensuring every client presence is not just functional, but legendary.
+             </p>
           </div>
         </section>
 
-        {/* Our Vision Section */}
-        <section ref={visionRef} className="bg-purple-50 rounded-2xl shadow-lg p-8 md:p-12 lg:p-16 mb-16 border border-purple-100">
-          <div className="flex flex-col md:flex-row-reverse items-center gap-10">
-            <div className="md:w-1/3 flex justify-center items-center mb-6 md:mb-0">
-              <div className="text-8xl text-purple-600">🔭</div> {/* Vision Icon */}
-            </div>
-            <div className="md:w-2/3 text-center md:text-right">
-              <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-4">
-                Our Vision: Shaping the Future of Web Services
-              </h2>
-              <p className="text-lg text-gray-700 leading-relaxed mb-4">
-                Our vision at webkraftery is to be the leading innovator in web services, recognized globally for our cutting-edge solutions, unparalleled client satisfaction, and significant contributions to the digital landscape. We aim to be the go-to partner for businesses seeking to transform their online presence and achieve sustainable digital growth.
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed">
-                We envision a future where every business, regardless of size, can harness the full potential of the internet with our support.
-              </p>
-            </div>
+        {/* --- VISION PANEL (Reverse Asymmetric) --- */}
+        <section className="panel-reveal grid grid-cols-1 lg:grid-cols-12 gap-12 mb-48 items-center">
+          <div className="lg:col-span-8 lg:order-1 order-2 bg-white/[0.02] border border-white/5 p-10 md:p-16 rounded-[3rem] backdrop-blur-sm lg:text-right">
+             <span className="text-cyan-500 font-mono text-[10px] uppercase tracking-[0.5em] mb-4 block">02_The Vision</span>
+             <h2 className="text-4xl md:text-6xl font-serif italic mb-6">Shaping the <br /><span className="not-italic font-black text-white uppercase tracking-tighter">New Frontier.</span></h2>
+             <p className="text-gray-400 text-lg font-light leading-relaxed">
+               We envision a global ecosystem where "standard" is obsolete. WebKraftery aims to be the premier architect of the web, recognized for pushing the limits of what’s possible and setting the benchmark for digital growth across the planet.
+             </p>
+          </div>
+          <div className="lg:col-span-4 lg:order-2 order-1 flex justify-center lg:justify-end">
+             <div className="relative w-48 h-48 md:w-64 md:h-64 flex items-center justify-center bg-cyan-600/10 border border-cyan-500/20 rounded-[3rem] -rotate-6 hover:rotate-0 transition-transform duration-700">
+                <span className="text-8xl">🔭</span>
+                <div className="absolute inset-0 animate-pulse bg-cyan-500/5 rounded-[3rem] blur-2xl" />
+             </div>
           </div>
         </section>
 
-        {/* Our Values Section */}
-        <section ref={valuesRef} className="bg-white rounded-2xl shadow-lg p-8 md:p-12 lg:p-16 mb-16 border border-purple-100">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-indigo-800 mb-4">
-              Our Core Values: Guiding Principles
-            </h2>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto">
-              These values are the foundation of our culture and the compass for our decisions, ensuring we always deliver with integrity and excellence.
-            </p>
+        {/* --- CORE VALUES (The Bento Grid) --- */}
+        <section className="values-grid">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-7xl font-serif italic mb-4">The <span className="not-italic font-black text-violet-500 uppercase tracking-tighter">Principles.</span></h2>
+            <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-violet-500 to-transparent mx-auto"></div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Value 1: Innovation */}
-            <div className="p-6 bg-indigo-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-indigo-700">🚀</div>
-              <h3 className="text-xl font-bold text-indigo-800 mb-2">Innovation</h3>
-              <p className="text-gray-700">Continuously exploring new technologies and creative solutions to stay ahead.</p>
-            </div>
-            {/* Value 2: Client Success */}
-            <div className="p-6 bg-purple-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-purple-700">🤝</div>
-              <h3 className="text-xl font-bold text-purple-800 mb-2">Client Success</h3>
-              <p className="text-gray-700">Prioritizing our clients' goals and building lasting partnerships based on trust.</p>
-            </div>
-            {/* Value 3: Integrity */}
-            <div className="p-6 bg-indigo-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-indigo-700">✨</div>
-              <h3 className="text-xl font-bold text-indigo-800 mb-2">Integrity</h3>
-              <p className="text-gray-700">Operating with honesty, transparency, and the highest ethical standards.</p>
-            </div>
-            {/* Value 4: Excellence */}
-            <div className="p-6 bg-purple-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-purple-700">🏆</div>
-              <h3 className="text-xl font-bold text-purple-800 mb-2">Excellence</h3>
-              <p className="text-gray-700">Committing to delivering superior quality in every project and interaction.</p>
-            </div>
-            {/* Value 5: Collaboration */}
-            <div className="p-6 bg-indigo-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-indigo-700">💡</div>
-              <h3 className="text-xl font-bold text-indigo-800 mb-2">Collaboration</h3>
-              <p className="text-gray-700">Fostering teamwork and open communication, both internally and with clients.</p>
-            </div>
-            {/* Value 6: Adaptability */}
-            <div className="p-6 bg-purple-50 rounded-xl shadow-md text-center">
-              <div className="text-5xl mb-3 text-purple-700">🔄</div>
-              <h3 className="text-xl font-bold text-purple-800 mb-2">Adaptability</h3>
-              <p className="text-gray-700">Embracing change and continuously evolving to meet market demands.</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              { t: "Innovation", d: "Bleeding-edge tech as a standard, never an afterthought.", i: "🚀", bg: "bg-violet-600/10 border-violet-500/20" },
+              { t: "Client Success", d: "Building partnerships based on ROI, trust, and zero fluff.", i: "🤝", bg: "bg-cyan-600/10 border-cyan-500/20" },
+              { t: "Integrity", d: "Radical transparency and unwavering ethical standards.", i: "✨", bg: "bg-white/5 border-white/10" },
+              { t: "Excellence", d: "Superior quality is our baseline; perfection is our pursuit.", i: "🏆", bg: "bg-white/5 border-white/10" },
+              { t: "Collaboration", d: "Teamwork that spans time zones and technologies.", i: "💡", bg: "bg-violet-600/10 border-violet-500/20" },
+              { t: "Adaptability", d: "Evolving at the speed of the digital pulse.", i: "🔄", bg: "bg-cyan-600/10 border-cyan-500/20" },
+            ].map((v, idx) => (
+              <div key={idx} className={`value-tile ${v.bg} border rounded-[2.5rem] p-10 group hover:scale-[1.02] transition-all duration-500`}>
+                <div className="text-5xl mb-6 grayscale group-hover:grayscale-0 transition-all duration-500">{v.i}</div>
+                <h3 className="text-xl font-bold uppercase tracking-[0.2em] mb-3">{v.t}</h3>
+                <p className="text-gray-500 text-sm font-light leading-relaxed italic">{v.d}</p>
+              </div>
+            ))}
           </div>
         </section>
 
+      </div>
+
+      {/* --- QUIRKY STATUS INDICATOR --- */}
+      <div className="fixed bottom-10 left-10 z-[100] hidden md:flex items-center gap-3 bg-black/40 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full">
+         <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+         </span>
+         <span className="text-[10px] font-mono tracking-widest text-gray-400 uppercase leading-none">Values_Locked</span>
       </div>
     </div>
   );

@@ -1,246 +1,180 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import adimg1 from '../../assets/ADS3.jpeg'; // Assuming this path is correct
-import adimg2 from "../../assets/ADS2.jpeg"; // Assuming this path is correct
-import adimg3 from "../../assets/ADS5.jpeg"; // Assuming this path is correct
 import { useNavigate } from 'react-router-dom';
+import adimg1 from '../../assets/ADS3.jpeg';
+import adimg2 from "../../assets/ADS2.jpeg";
+import adimg3 from "../../assets/ADS5.jpeg";
+
 gsap.registerPlugin(ScrollTrigger);
 
 const GoogleAds = () => {
   const navigate = useNavigate();
-  const heroTextRef = useRef(null); // Ref for the hero section text
-  const heroImageRef = useRef(null); // Ref for the hero section image
-  const section2Ref = useRef(null); // Ref for the second content section
-  const section2ImageRef = useRef(null); // Ref for the second image
-  const section3Ref = useRef(null); // Ref for the third content section
-  const section3ImageRef = useRef(null); // Ref for the third image
-  const ctaRef = useRef(null); // Ref for the Call to Action section
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1.2, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    // Initial animation for the hero section (text and first image)
-    tl.fromTo(
-      heroTextRef.current,
-      { x: -100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 }
-    )
-    .fromTo(
-      heroImageRef.current,
-      { x: 100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 },
-      '-=0.8'
-    );
+      // Entrance Sequence
+      tl.from(".reveal-h1", { y: 100, opacity: 0, duration: 1.4 })
+        .from(".search-bar-ui", { scale: 0.8, opacity: 0, duration: 1 }, "-=1")
+        .from(".hero-card", { y: 50, opacity: 0, stagger: 0.1, duration: 1 }, "-=0.5");
 
-    // Scroll-triggered animations for subsequent sections
-    // Section 2 animation
-    gsap.fromTo(
-      section2Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section2Ref.current,
-          start: 'top 80%', // When top of trigger hits 80% of viewport
-          toggleActions: 'play none none none', // Play animation once
-        }
-      }
-    );
+      // Scroll reveal for bento sections
+      gsap.utils.toArray(".bento-reveal").forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+          y: 40,
+          opacity: 0,
+          duration: 1,
+        });
+      });
+    }, containerRef);
 
-    gsap.fromTo(
-      section2ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section2ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-    // Section 3 animation
-    gsap.fromTo(
-      section3Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section3Ref.current,
-          start: 'top 80%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-    gsap.fromTo(
-      section3ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section3ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-    // CTA section animation
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%', // Adjust as needed
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-200 min-h-screen py-2 px-4 sm:px-6 lg:px-8 mt-15">
-      <div className="max-w-[90vw] mx-auto rounded-xl shadow-2xl overflow-hidden bg-white">
-        {/* Hero Section for Google Advertising */}
-        <div className="paraFont-900 relative p-4 md:p-6 lg:p-8 text-center bg-gradient-to-b from-purple-950 to-purple-300 text-white">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-            Google Advertising
+    <div ref={containerRef} className="relative bg-[#020617] text-[#f8fafc] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- PREMIUM DYNAMIC BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-indigo-600/20 blur-[150px] rounded-full" />
+      <div className="absolute bottom-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-yellow-500/10 blur-[120px] rounded-full" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+        
+        {/* --- HERO SECTION --- */}
+        <header className="text-center mb-40">
+          <div className="search-bar-ui inline-flex items-center gap-4 px-6 py-3 mb-10 border border-white/10 rounded-full bg-white/5 backdrop-blur-xl shadow-2xl">
+            <span className="text-blue-400 font-bold">G</span>
+            <div className="w-[1px] h-4 bg-white/20"></div>
+            <span className="text-sm font-light text-gray-400 italic">"Best digital advertising agency near me"</span>
+            <div className="bg-blue-600 p-1 rounded-full text-[10px]">🔍</div>
+          </div>
+          
+          <h1 className="reveal-h1 text-6xl md:text-[140px] font-black leading-[0.8] tracking-tighter mb-10">
+            MAXIMIZE <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-yellow-300 italic font-serif font-light tracking-normal">
+              VISIBILITY.
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
-            Maximize Your Reach: Drive Targeted Traffic and Boost Your ROI with Google Ads.
+          <p className="reveal-h1 max-w-2xl mx-auto text-gray-400 text-lg md:text-xl font-light leading-relaxed">
+            Stop guessing. Start growing. We engineer high-intent Google Ads campaigns that dominate the auction and multiply your ROI.
           </p>
-        </div>
+        </header>
 
-        {/* Content Section 1: Introduction to Google Ads */}
-        <div className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          <div ref={heroTextRef} className="md:w-1/2 text-gray-800">
-            <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Reach the Right Audience at the Right Time
-            </h2>
-            <p className="mb-4 text-lg leading-relaxed">
-              Reach the right audience at the right time with our results-driven Google Ads services.
-              We create targeted campaigns that boost visibility, drive qualified traffic, and increase your ROI.
-            </p>
-            <p className="text-purple-900 font-semibold mb-2">Our Services Include:</p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Comprehensive Search & Display Ads Management</li>
-              <li>Precise Keyword Research & Targeting</li>
-              <li>Advanced Conversion Tracking for Better Insights</li>
-              <li>Continuous A/B Testing to Optimize Performance</li>
-              <li>Remarketing Strategies to Re-engage Users</li>
-            </ul>
-          </div>
-
-          <div ref={heroImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={adimg1}
-              alt="Google Ads Campaign Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Google+Ads+Image"; }} // Fallback
+        {/* --- BENTO CONTENT GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+          
+          {/* Main Strategy Hub */}
+          <div className="hero-card md:col-span-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden group">
+            <div className="relative z-10 md:w-2/3">
+              <h2 className="text-4xl font-serif italic mb-6">Strategic Domination.</h2>
+              <p className="text-gray-400 font-light leading-relaxed mb-8">
+                Our team leverages Search intent analysis and search engine metrics to build campaigns that deliver measurable results, whether it's lead generation or brand authority.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {['Keyword Targeting', 'Conversion Tracking', 'A/B Testing', 'Remarketing'].map(tag => (
+                  <span key={tag} className="px-4 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] tracking-widest font-bold uppercase text-blue-400">{tag}</span>
+                ))}
+              </div>
+            </div>
+            <img 
+              src={adimg1} 
+              className="absolute right-[-10%] bottom-[-5%] w-2/3 grayscale opacity-30 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-1000 scale-110"
+              alt="Strategy" 
             />
           </div>
-        </div>
 
-        {/* Content Section 2: Smart Ad Strategies */}
-        <div ref={section2Ref} className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16 bg-purple-50 rounded-b-xl">
-          <div ref={section2ImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={adimg2}
-              alt="Ad Strategy Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Ad+Strategy+Image"; }} // Fallback
-            />
+          {/* Metric Quirky Card */}
+          <div className="hero-card md:col-span-4 bg-yellow-500/5 border border-yellow-500/20 rounded-[2.5rem] p-12 flex flex-col justify-between overflow-hidden relative group">
+            <div className="text-yellow-500 font-mono text-[10px] uppercase tracking-widest font-bold">// PERFORMANCE_METRIC</div>
+            <div className="relative z-10">
+              <span className="text-8xl font-black italic text-white tracking-tighter">5.2</span>
+              <span className="text-2xl font-serif text-yellow-300">x</span>
+              <p className="text-gray-500 text-xs mt-2 uppercase tracking-[0.2em] font-light italic">Average increase in ROI <br /> across retail accounts.</p>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-yellow-500/20 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-700" />
           </div>
-          <div className="md:w-1/2 text-gray-800">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Crafting Smart, Data-Driven Ad Strategies
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              We don't just run ads — we craft campaigns designed to convert. Our team leverages in-depth market research, search intent analysis, competitor data, and audience demographics to build smart, cost-effective strategies that deliver measurable results.
-            </p>
-            <p className="text-lg leading-relaxed">
-              Every campaign is meticulously planned and executed, focusing on maximizing your return on investment and achieving your specific business objectives, whether it's lead generation, sales, or brand awareness.
-            </p>
-          </div>
-        </div>
 
-        {/* Content Section 3: Why Google Ads? */}
-        <div ref={section3Ref} className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          <div className="md:w-1/2 text-gray-800 order-2 md:order-1">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Unlock Unmatched Visibility with Google Ads
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              <span className='text-purple-950 font-semibold'>Google Ads</span> is one of the most powerful and cost-effective
-              <span className='text-purple-950 font-semibold'> digital marketing</span> tools available in today’s competitive online landscape.
-              With billions of daily <span className='text-purple-950 font-semibold'>Google searches</span>, this advertising platform allows your business
-              to reach high-intent users who are actively searching for products or services like yours.
-            </p>
-            <p className="mb-4 text-lg leading-relaxed">
-              Whether you’re a startup, small business, or an established enterprise,
-              <span className='text-purple-950 font-semibold'> Google Ads</span> helps you appear at the top of
-              <span className='text-purple-950 font-semibold'> search engine results</span>, driving qualified traffic directly to your website.
-              By leveraging <span className='text-purple-950 font-semibold'>keyword targeting</span>,
-              <span className='text-purple-950 font-semibold'> location-based ads</span>, and
-              <span className='text-purple-950 font-semibold'> custom audience segments</span>, we ensure your brand appears in front of the right people —
-              at exactly the right time.
-            </p>
-            <p className="text-lg leading-relaxed">
-              Our strategic approach to <span className='text-purple-950 font-semibold'>PPC (Pay-Per-Click) advertising</span>,
-              combined with <span className='text-purple-950 font-semibold'>conversion-optimized landing pages</span>, allows you to maximize ROI
-              while reducing unnecessary ad spend. With continuous <span className='text-purple-950 font-semibold'>campaign optimization</span>,
-              <span className='text-purple-950 font-semibold'> A/B testing</span>, and
-              <span className='text-purple-950 font-semibold'> performance analytics</span>, your business stays one step ahead of the competition.
-            </p>
-            <p className="text-lg leading-relaxed">
-              Let us help you harness the full potential of
-              <span className='text-purple-950 font-semibold'> Google search ads</span>,
-              <span className='text-purple-950 font-semibold'> display ads</span>, and
-              <span className='text-purple-950 font-semibold'> remarketing campaigns</span> to generate more leads, increase sales, and build brand authority.
-            </p>
-          </div>
-          <div ref={section3ImageRef} className="md:w-1/2 flex justify-center items-center order-1 md:order-2">
-            <img
-              src={adimg3}
-              alt="Why Google Ads Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Why+Google+Ads"; }} // Fallback
-            />
+          {/* Process Section HUD */}
+          <div className="bento-reveal md:col-span-12 mt-6 bg-[#0a0f1e] border border-white/5 rounded-[3rem] p-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+              <div className="order-2 lg:order-1">
+                <span className="text-blue-500 font-mono text-xs uppercase tracking-[0.4em] mb-4 block">Engineered Growth</span>
+                <h3 className="text-5xl font-serif italic mb-10">Data-Driven <br /><span className="text-white not-italic font-black">AD STRATEGY.</span></h3>
+                
+                <div className="space-y-8">
+                  {[
+                    { t: "INTENT MAPPING", d: "Targeting users at the exact moment of decision." },
+                    { t: "CONVERSION OPTIMIZATION", d: "Every click is treated as a potential client." },
+                    { t: "MARKET ANALYTICS", d: "Using competitor data to out-bid and out-maneuver." }
+                  ].map((s, i) => (
+                    <div key={i} className="group border-l border-white/10 pl-6 hover:border-blue-500 transition-colors">
+                      <h5 className="text-lg font-bold group-hover:text-blue-400 transition-colors uppercase tracking-widest">{s.t}</h5>
+                      <p className="text-gray-500 text-sm font-light leading-relaxed">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="order-1 lg:order-2">
+                <img 
+                  src={adimg2} 
+                  className="rounded-[2.5rem] border border-white/10 shadow-2xl filter brightness-90 hover:brightness-100 transition-all duration-700"
+                  alt="Data Analytics"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Call to Action or Additional Info */}
-        <div ref={ctaRef} className="paraFont-900 bg-gradient-to-t from-purple-950 to-purple-300 text-white p-8 md:p-12 lg:p-16 text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4">Ready to boost your online presence with Google Ads?</h3>
-          <p className="text-lg mb-6">
-            Contact us today for a free consultation and let's create a winning advertising strategy for your business.
-          </p>
-          <button onClick={()=>{navigate('/contactus')}}
-          className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 hover:text-purple-900 transition-colors duration-300">
-            Get a Free Quote
+        {/* --- FULL WIDTH WHY SECTION --- */}
+        <section className="bento-reveal grid grid-cols-1 lg:grid-cols-2 gap-20 items-center mb-40 px-10">
+          <img 
+            src={adimg3} 
+            className="rounded-[3rem] shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-700"
+            alt="Visibility"
+          />
+          <div>
+             <h2 className="text-5xl font-serif italic mb-8">Reach the <br /><span className="text-blue-400 not-italic font-black tracking-tighter">HIGH-INTENT</span> Audience.</h2>
+             <p className="text-gray-400 text-lg font-light leading-relaxed mb-8">
+                Google Ads is the world's most powerful digital marketing tool. We ensure your brand appears at the top of search results, driving qualified traffic directly to your website.
+             </p>
+             <div className="space-y-4">
+               {['Search Engine Results', 'PPC Advertising', 'Remarketing Campaigns'].map(item => (
+                 <div key={item} className="flex items-center gap-4 group cursor-default">
+                    <div className="w-8 h-[1px] bg-blue-500 group-hover:w-12 transition-all" />
+                    <span className="text-xs font-mono uppercase tracking-[0.3em] text-gray-300">{item}</span>
+                 </div>
+               ))}
+             </div>
+          </div>
+        </section>
+
+        {/* --- PREMIUM CALL TO ACTION --- */}
+        <footer className="bento-reveal text-center py-32 relative rounded-[4rem] bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent"></div>
+          
+          <h2 className="text-5xl md:text-7xl font-serif italic mb-12">
+            Ready to <span className="not-italic font-black text-white underline decoration-blue-500 decoration-1 underline-offset-[14px]">Accelerate?</span>
+          </h2>
+          
+          <button
+            onClick={() => navigate('/contactus')}
+            className="group relative px-20 py-6 bg-transparent overflow-hidden"
+          >
+            <span className="relative z-10 text-white font-mono tracking-[0.6em] text-[10px] uppercase group-hover:text-black transition-colors duration-500">
+                Launch Campaign
+            </span>
+            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-[expo.inOut]"></div>
+            <div className="absolute inset-0 border border-white/20"></div>
           </button>
-        </div>
+        </footer>
       </div>
     </div>
   );

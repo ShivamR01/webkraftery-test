@@ -2,107 +2,37 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
-
 const OurValues = () => {
   const containerRef = useRef(null);
-  const headingRef = useRef(null);
-  const cardRefs = useRef([]);
-  const blobRefs = useRef([]);
 
-  // Initialize animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Master timeline for perfect sequencing
-      const tl = gsap.timeline({
+      // Kinetic Text Animation
+      gsap.to(".marquee-text", {
+        xPercent: -50,
+        ease: "none",
         scrollTrigger: {
           trigger: containerRef.current,
-          start: "top 85%",
-          end: "top 30%",
-          scrub: 1.5,
-          markers: false, // Set to true for debugging
-          toggleActions: "play none none reverse"
+          start: "top bottom",
+          end: "bottom top",
+          scrub: 1,
         }
       });
 
-      // Heading animation with character splitting
-      tl.fromTo(headingRef.current, 
-        { 
-          y: 50, 
+      // Cards "Elevate" on Scroll
+      gsap.utils.toArray(".v-card").forEach((card, i) => {
+        gsap.from(card, {
+          y: 200,
           opacity: 0,
-          filter: "blur(5px)"
-        },
-        { 
-          y: 0,
-          opacity: 1,
-          filter: "blur(0px)",
-          duration: 1.2,
-          ease: "power4.out"
-        },
-        0
-      );
-
-      // Card animations with perfect stagger
-      cardRefs.current.forEach((card, i) => {
-        tl.fromTo(card,
-          {
-            y: 80 + (i * 10),
-            opacity: 0,
-            scale: 0.92,
-            rotationX: 15,
-            transformOrigin: "center bottom"
-          },
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            rotationX: 0,
-            duration: 0.8,
-            ease: "back.out(1.4)"
-          },
-          0.1 * i // Beautiful staggered timing
-        );
-      });
-
-      // Background blobs animation
-      blobRefs.current.forEach((blob, i) => {
-        gsap.fromTo(blob,
-          {
-            scale: 0,
-            opacity: 0,
-            x: gsap.utils.random(-200, 200),
-            y: gsap.utils.random(-100, 100)
-          },
-          {
-            scale: 1,
-            opacity: 0.2,
-            duration: 2,
-            ease: "elastic.out(1, 0.5)",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top 90%",
-              scrub: 1.5
-            }
-          }
-        );
-      });
-
-      // Subtle background color shift
-      gsap.fromTo(containerRef.current,
-        { backgroundColor: "rgba(243, 232, 255, 0)" },
-        {
-          backgroundColor: "rgba(243, 232, 255, 0.8)",
+          rotateY: i % 2 === 0 ? 15 : -15,
           scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 90%",
-            scrub: 1
+            trigger: card,
+            start: "top 95%",
+            end: "top 70%",
+            scrub: 1,
           }
-        }
-      );
-
+        });
+      });
     }, containerRef);
 
     return () => ctx.revert();
@@ -110,95 +40,112 @@ const OurValues = () => {
 
   const values = [
     {
-      title: "Innovation",
-      description: "We constantly explore new technologies and creative approaches to deliver cutting-edge solutions.",
-      icon: "💡",
-      color: "from-violet-500/10 to-fuchsia-500/10"
+      title: "Radical\nInnovation",
+      desc: "We invent protocols, we don't just follow patterns.",
+      tag: "01",
+      span: "lg:col-span-8",
+      color: "#FF5F1F", // Neon Safety Orange
+      text: "#000",
+      height: "h-[500px]"
     },
     {
-      title: "Client-Centricity", 
-      description: "Your success is our priority. We listen, understand, and tailor our services to meet your goals.",
-      icon: "❤️",
-      color: "from-rose-500/10 to-pink-500/10"
+      title: "Atomic\nQuality",
+      desc: "Precision down to the millisecond.",
+      tag: "02",
+      span: "lg:col-span-4",
+      color: "#0047AB", // Cobalt Blue
+      text: "#FFF",
+      height: "h-[500px]"
     },
     {
-      title: "Quality Excellence",
-      description: "Committed to delivering high-quality, robust web solutions that stand the test of time.",
-      icon: "✨",
-      color: "from-amber-500/10 to-yellow-500/10"
+      title: "Fluid\nLogic",
+      desc: "Systems that breathe and adapt in real-time.",
+      tag: "03",
+      span: "lg:col-span-4",
+      color: "#00FA9A", // Spring Green
+      text: "#000",
+      height: "h-[400px]"
     },
     {
-      title: "Transparency",
-      description: "Open communication and clear processes at the heart of our operations.",
-      icon: "🔍",
-      color: "from-sky-500/10 to-cyan-500/10"
-    },
-    {
-      title: "Continuous Growth",
-      description: "We foster a culture of learning to better serve our clients and team.",
-      icon: "📈",
-      color: "from-emerald-500/10 to-teal-500/10"
+      title: "Legacy\nScale",
+      desc: "Building the infrastructure for the next century.",
+      tag: "04",
+      span: "lg:col-span-8",
+      color: "#1A1A1A", // Obsidian
+      text: "#FFF",
+      height: "h-[400px]"
     }
   ];
 
   return (
-    <section 
-      ref={containerRef}
-      className="relative py-32 px-4 overflow-hidden isolate"
-    >
-      {/* Floating blobs */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(8)].map((_, i) => (
-          <div 
-            key={i}
-            ref={el => blobRefs.current[i] = el}
-            className="absolute rounded-full bg-gray-500"
-            style={{
-              width: `${Math.random() * 300 + 100}px`,
-              height: `${Math.random() * 300 + 100}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              filter: 'blur(60px)',
-              opacity: 0
-            }}
-          />
-        ))}
-      </div>
+    <section ref={containerRef} className="relative py-40 bg-[#F0F0F0] overflow-hidden">
       
-      <div className="max-w-7xl mx-auto relative z-10">
-        <h2 
-          ref={headingRef}
-          className="text-5xl md:text-6xl lg:text-7xl font-bold text-center mb-20 text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-violet-600 opacity-0"
-        >
-          Our Core Values
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {values.map((value, index) => (
+      {/* KINETIC BACKGROUND MARQUEE */}
+      <div className="absolute top-10 left-0 w-[200%] whitespace-nowrap opacity-[0.05] pointer-events-none">
+        <span className="marquee-text inline-block text-[25vh] font-black uppercase tracking-tighter">
+          ARCHITECTING THE FUTURE • BENDING THE LOGIC • ARCHITECTING THE FUTURE • BENDING THE LOGIC •
+        </span>
+      </div>
+
+      <div className="max-w-[1600px] mx-auto px-6">
+        {/* HEADER: Ultra-Condensed Layout */}
+        <header className="mb-32 grid grid-cols-1 lg:grid-cols-12 gap-10 items-end">
+          <div className="lg:col-span-8">
+            <h2 className="text-[clamp(4rem,12vw,12rem)] font-black leading-[0.75] tracking-tighter text-black uppercase">
+              THE <br /> <span className="text-transparent" style={{ WebkitTextStroke: "2px black" }}>VALUES.</span>
+            </h2>
+          </div>
+          <div className="lg:col-span-4 pb-4">
+            <p className="text-xl font-bold uppercase tracking-widest text-black border-l-4 border-black pl-6">
+              [ 2026_PROTOCOL_V.1 ] <br />
+              <span className="font-normal normal-case text-gray-600 italic">Redefining the standard of digital craftsmanship.</span>
+            </p>
+          </div>
+        </header>
+
+        {/* THE "LIVING" GRID */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 perspective-[2000px]">
+          {values.map((v, i) => (
             <div 
-              key={index}
-              ref={el => cardRefs.current[index] = el}
-              className={`bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 border border-white/30 hover:border-white/50 relative overflow-hidden group opacity-0`}
+              key={i}
+              className={`${v.span} ${v.height} v-card group relative p-12 rounded-[1rem] flex flex-col justify-between overflow-hidden shadow-[20px_20px_0px_0px_#000] transition-all duration-500 hover:shadow-[5px_5px_0px_0px_#000] hover:translate-x-[15px] hover:translate-y-[15px]`}
+              style={{ backgroundColor: v.color, color: v.text }}
             >
-              {/* Animated gradient overlay */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${value.color} opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-3xl`}></div>
-              
-              <div className="relative z-10 h-full flex flex-col">
-                <div className="text-5xl mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">{value.icon}</div>
-                <h3 className="text-2xl font-bold mb-4 text-gray-900 group-hover:text-black transition-colors duration-300">
-                  {value.title}
+              <div className="flex justify-between items-start font-mono text-sm font-bold">
+                <span className="bg-white text-black px-3 py-1 rounded-full shadow-sm">ID://{v.tag}</span>
+                <span className="uppercase tracking-widest opacity-50">Confidential_Draft</span>
+              </div>
+
+              <div className="relative z-10">
+                <h3 className="text-5xl md:text-7xl font-black leading-none uppercase mb-6 whitespace-pre-line tracking-tighter">
+                  {v.title}
                 </h3>
-                <p className="text-gray-700 group-hover:text-gray-900 transition-colors duration-300 flex-grow">
-                  {value.description}
+                <p className="text-lg md:text-xl font-bold max-w-xs leading-tight opacity-90">
+                  {v.desc}
                 </p>
-                <div className="mt-6 h-1 w-0 group-hover:w-full bg-violet-500 transition-all duration-700"></div>
+              </div>
+
+              {/* Unique Interactive HUD element on each card */}
+              <div className="absolute bottom-10 right-10 flex flex-col items-end gap-2">
+                 <div className="w-24 h-[2px] bg-current opacity-30" />
+                 <div className="w-16 h-[2px] bg-current opacity-30 group-hover:w-24 transition-all duration-700" />
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* FIXED SIDEBAR STATUS */}
+      {/* <div className="fixed right-10 top-1/2 -translate-y-1/2 hidden xl:flex flex-col gap-8 z-50 mix-blend-difference">
+         <div className="w-[2px] h-32 bg-white/20 relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1/2 bg-white animate-pulse" />
+         </div>
+         <p className="font-mono text-[10px] text-white tracking-[0.5em] rotate-90 origin-left uppercase">
+           Core_Engine_Stable
+         </p>
+      </div> */}
     </section>
   );
-}
+};
 
 export default OurValues;

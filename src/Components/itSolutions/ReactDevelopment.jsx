@@ -1,174 +1,184 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger'; // Import ScrollTrigger
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router-dom';
-import React1 from '../../assets/React1.png'
-import React2 from '../../assets/React2.webp'
-gsap.registerPlugin(ScrollTrigger); // Register ScrollTrigger
+import React1 from '../../assets/React1.png';
+import React2 from '../../assets/React2.webp';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const ReactDevelopment = () => {
   const navigate = useNavigate();
-  const heroTextRef = useRef(null); // Ref for the hero section text
-  const heroImageRef = useRef(null); // Ref for the hero section image
-  const section2Ref = useRef(null); // Ref for the second content section (text)
-  const section2ImageRef = useRef(null); // Ref for the second content section (image)
-  const ctaRef = useRef(null);         // Ref for the Call to Action section
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1.2, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-    // Initial animation for the hero section (text and first image)
-    tl.fromTo(
-      heroTextRef.current,
-      { x: -100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 }
-    )
-    .fromTo(
-      heroImageRef.current,
-      { x: 100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 },
-      '-=0.8'
-    );
+      // Entrance Sequence
+      tl.from(".reveal-h1", { y: 80, opacity: 0, duration: 1.2 })
+        .from(".reveal-sub", { y: 40, opacity: 0, duration: 1 }, "-=0.8")
+        .from(".bento-card", { 
+          scale: 0.9, 
+          opacity: 0, 
+          stagger: 0.1, 
+          duration: 1.2,
+          ease: "back.out(1.4)" 
+        }, "-=0.5");
 
-    // Scroll-triggered animations for subsequent sections
-    // Section 2 animation (text and image)
-    gsap.fromTo(
-      section2Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section2Ref.current,
-          start: 'top 80%', // When top of trigger hits 80% of viewport
-          toggleActions: 'play none none none', // Play animation once
-        }
-      }
-    );
+      // Scroll reveal for images and sections
+      gsap.utils.toArray(".scroll-reveal").forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+          y: 60,
+          opacity: 0,
+          duration: 1,
+        });
+      });
+    }, containerRef);
 
-    gsap.fromTo(
-      section2ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section2ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-    // CTA section animation
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%', // Adjust as needed
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-  }, []); // Empty dependency array means this effect runs once on mount
+    return () => ctx.revert();
+  }, []);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-200  min-h-screen py-2 px-4 sm:px-6 lg:px-8 mt-15">
-      <div className="max-w-[90vw] mx-auto rounded-xl shadow-2xl overflow-hidden bg-white">
-        {/* Hero Section for React Development */}
-        <div className="paraFont-900 relative p-4 md:p-6 lg:p-8 text-center bg-gradient-to-b from-purple-950 to-purple-300 text-white">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-            React Development
+    <div ref={containerRef} className="relative bg-[#02040a] text-[#e1e1e1] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- COSMIC BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.04] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 blur-[120px] rounded-full animate-pulse" />
+      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+        
+        {/* --- HERO SECTION --- */}
+        <header className="text-center mb-32">
+          <div className="inline-block px-4 py-1 mb-6 border border-blue-500/30 rounded-full bg-blue-500/5 backdrop-blur-md">
+            <span className="text-blue-400 text-[10px] font-bold tracking-[0.4em] uppercase">Atomic Design Logic</span>
+          </div>
+          <h1 className="reveal-h1 text-7xl md:text-[140px] font-black leading-[0.8] tracking-tighter mb-8">
+            REACT <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-500 italic font-serif font-light">
+              REVOLUTION
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
-            Building dynamic, high-performance, and scalable web applications with the power of React.js.
+          <p className="reveal-sub max-w-2xl mx-auto text-gray-500 text-lg md:text-xl font-light leading-relaxed">
+            Harnessing the Virtual DOM to create blazing fast, component-driven experiences that redefine the modern web.
           </p>
-        </div>
+        </header>
 
-        {/* Content Section 1: Why Choose React for Your Next Project? */}
-        <div className="flex noto-serif flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          {/* Text Content */}
-          <div ref={heroTextRef} className="md:w-1/2 text-gray-800">
-            <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Why Choose React for Your Next Project?
-            </h2>
-            <p className="mb-4 text-lg leading-relaxed">
-              React.js is a leading JavaScript library for building user interfaces, known for its component-based architecture, virtual DOM, and efficient rendering. It allows developers to create complex UIs from small, isolated pieces of code called "components."
-            </p>
-            <p className="mb-4 text-lg leading-relaxed">
-              At Pryzen Technologies, our expert React developers leverage its robust ecosystem to deliver fast, interactive, and highly maintainable applications. Whether you need a single-page application (SPA), a complex dashboard, or a progressive web app (PWA), React provides the flexibility and performance required.
-            </p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Component-Based Architecture for Reusability</li>
-              <li>Virtual DOM for Optimized Performance</li>
-              <li>Strong Community Support and Ecosystem</li>
-              <li>Declarative UI for Predictable Code</li>
-              <li>Cross-Platform Capabilities with React Native</li>
-            </ul>
-          </div>
-
-          {/* Image Space */}
-          <div ref={heroImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={React1}
-              alt="React Development Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Image+Not+Found"; }}
+        {/* --- BENTO CONTENT GRID --- */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+          
+          {/* Main Why React Card */}
+          <div className="bento-card md:col-span-8 group bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden transition-all hover:bg-white/[0.04]">
+            <div className="relative z-10">
+              <h2 className="text-4xl font-serif italic mb-8">Engineered for Performance.</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <p className="text-gray-400 font-light leading-relaxed">
+                  React isn't just a library; it's a blueprint for scalability. We use its component-based DNA to build systems that are as maintainable as they are beautiful.
+                </p>
+                <ul className="space-y-3">
+                  {[
+                    "Virtual DOM Optimization",
+                    "State Management (Redux/Zustand)",
+                    "Server-Side Rendering (Next.js)",
+                    "Micro-Frontend Readiness"
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-sm font-mono text-blue-400">
+                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full shadow-[0_0_8px_#3b82f6]" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            {/* Background Image Overlay */}
+            <img 
+              src={React1} 
+              className="absolute right-[-15%] top-[-10%] w-2/3 opacity-10 grayscale group-hover:grayscale-0 group-hover:opacity-30 transition-all duration-1000 rotate-12"
+              alt="React Abstract" 
             />
           </div>
+
+          {/* Quick Metrics Card */}
+          <div className="bento-card md:col-span-4 bg-gradient-to-br from-blue-900/20 to-transparent border border-blue-500/10 rounded-[2.5rem] p-12 flex flex-col justify-between">
+            <div className="text-blue-500 font-mono text-xs tracking-widest uppercase mb-4">// System Status</div>
+            <div>
+              <span className="text-8xl font-black italic text-white tracking-tighter">60</span>
+              <span className="text-3xl font-serif italic text-blue-400">fps</span>
+              <p className="text-gray-500 text-sm mt-2 uppercase tracking-[0.2em] font-light">Fluid Rendering Guaranteed</p>
+            </div>
+          </div>
+
+          {/* Process Section (Scroll-Reveal) */}
+          <div className="scroll-reveal md:col-span-12 mt-10 bg-[#0a0c14] border border-white/5 rounded-[3rem] p-10 md:p-20 relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+              <div>
+                <img 
+                  src={React2} 
+                  className="rounded-3xl border border-white/10 shadow-2xl grayscale hover:grayscale-0 transition-all duration-700" 
+                  alt="React Process" 
+                />
+              </div>
+              <div>
+                <span className="text-blue-500 font-mono text-xs uppercase tracking-[0.3em] mb-4 block">The Lifecycle</span>
+                <h3 className="text-5xl font-serif italic mb-10">Agile Delivery <br /><span className="text-white not-italic font-black">SYNCED.</span></h3>
+                
+                <div className="space-y-8">
+                  {[
+                    { t: "Atomic Discovery", d: "Breaking your idea into modular components." },
+                    { t: "Iterative Sprints", d: "Rapid prototyping with live feedback loops." },
+                    { t: "Rigorous QA", d: "End-to-end testing for bulletproof stability." }
+                  ].map((s, i) => (
+                    <div key={i} className="group cursor-default">
+                      <div className="flex items-center gap-4 mb-2">
+                        <span className="text-blue-500 font-bold font-mono">0{i+1}.</span>
+                        <h4 className="text-xl font-bold group-hover:text-blue-400 transition-colors uppercase tracking-widest">{s.t}</h4>
+                      </div>
+                      <p className="text-gray-500 font-light ml-10">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Content Section 2: Our React Development Process */}
-        <div ref={section2Ref} className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16 bg-purple-50 rounded-b-xl">
-          <div ref={section2ImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={React2}
-              alt="React Development Process Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=React+Process+Image"; }} // Fallback
-            />
+        {/* --- PREMIUM CALL TO ACTION --- */}
+        <div className="scroll-reveal text-center py-32 relative rounded-[4rem] bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+          {/* Background React Logo (Quirky element) */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[40vw] text-blue-500/5 pointer-events-none select-none animate-spin-slow">
+            ⚛
           </div>
-          <div className="md:w-1/2 text-gray-800">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Our Agile React Development Process
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              We follow an agile and iterative development process to build React applications that are robust, scalable, and perfectly aligned with your business goals. From concept to deployment, our team ensures transparency and collaboration at every stage.
-            </p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Discovery & Planning: Defining scope and requirements.</li>
-              <li>Design & Prototyping: Crafting intuitive UI/UX.</li>
-              <li>Component Development: Building reusable React components.</li>
-              <li>Testing & Quality Assurance: Ensuring bug-free performance.</li>
-              <li>Deployment & Launch: Bringing your application to life.</li>
-              <li>Post-Launch Support: Ongoing maintenance and updates.</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Call to Action or Additional Info */}
-        <div ref={ctaRef} className="paraFont-900 bg-gradient-to-t from-purple-950 to-purple-300 text-white p-8 md:p-12 lg:p-16 text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4">Ready to build with React?</h3>
-          <p className="text-lg mb-6">
-            Let's discuss your project and see how our React expertise can bring your ideas to life.
-          </p>
-          <button onClick={()=>{navigate('/contactus')}}
-          className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 hover:text-purple-900 transition-colors duration-300">
-            Get a Free Consultation
+          
+          <h2 className="relative z-10 text-4xl md:text-7xl font-serif italic mb-12">
+            Build the <span className="not-italic font-black text-white underline decoration-blue-500 decoration-2 underline-offset-[12px]">Exceptional.</span>
+          </h2>
+          
+          <button
+            onClick={() => navigate('/contactus')}
+            className="relative z-10 group px-16 py-6 bg-white text-black font-black tracking-widest text-xs uppercase rounded-full overflow-hidden hover:text-white transition-colors duration-500"
+          >
+            <span className="relative z-10">Commence Consultation</span>
+            <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[expo.out]"></div>
           </button>
         </div>
+
       </div>
+      
+      {/* Custom Styles for Quirky Rotation */}
+      <style jsx>{`
+        .animate-spin-slow {
+          animation: spin 20s linear infinite;
+        }
+        @keyframes spin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 };

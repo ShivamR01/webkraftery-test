@@ -1,175 +1,136 @@
-import React, { useEffect, useRef } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import React, { useEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
-import 'swiper/css';
-import 'swiper/css/pagination';
-import 'swiper/css/navigation';
-import 'swiper/css/autoplay';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const testimonials = [
+  {
+    quote: "Kunal delivered a dynamic, well-designed solution. His skills helped position me as a Creative Director.",
+    author: "Shashwat Prajapati",
+    role: "Founder, Shazofyne",
+    color: "bg-[#FF5F1F]", // Neon Orange
+    text: "text-black"
+  },
+  {
+    quote: "Stunning Donation platform. They translated our vision into a seamless and intuitive platform.",
+    author: "Rajeswar Tyagi",
+    role: "Trustee, Ladlilaxmi",
+    color: "#0047AB", // Cobalt Blue
+    text: "text-white"
+  },
+  {
+    quote: "The React application is incredibly fast. We're genuinely impressed with the performance.",
+    author: "Shivam Tyagi",
+    role: "Senior Educator",
+    color: "#00FA9A", // Spring Green
+    text: "text-black"
+  }
+];
 
 const TestimonialsSection = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef(null);
-  const titleRef = useRef(null);
-  const swiperRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(titleRef.current, {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        ease: "elastic.out(1, 0.5)",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none none"
-        }
-      });
-
-      gsap.from(".swiper-slide", {
-        y: 50,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 0.7,
-        ease: "back.out(1.2)",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 70%",
-          toggleActions: "play none none none"
-        }
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  const testimonials = [
-    {
-      quote: "When I needed a portfolio website, Kunal delivered a dynamic, well-designed solution that exceeded my expectations. His exceptional skills in both frontend and backend development helped bring my vision to life with seamless functionality and an aesthetic that truly reflected my work. The website not only showcased my best projects as a freelancer but also played a key role in positioning me as a Creative Director and attracting quality leads.",
-      author: "Shashwat Prajapati",
-      title: "Creative Director & Founder of Shazofyne",
-      avatar: "https://placehold.co/100x100/A78BFA/ffffff?text=SP"
-    },
-    {
-      quote: "The team at WebKraftery delivered a stunning Donation platform that exceeded our expectations.From the outset, they demonstrated a remarkable understanding of our needs, translating our vision into a seamless and intuitive platform. Their communication was consistently clear and proactive, keeping us informed at every stage of the development process. Furthermore, the support they provided throughout the entire project. We are incredibly pleased with the final product and the collaborative journey.",
-      author: "Rajeswar Tyagi",
-      title: "Trusty Of Ladlilaxmi Janhit Trust ",
-      avatar: "https://placehold.co/100x100/8B5CF6/ffffff?text=RT"
-    },
-    {
-      quote: "WebKraftery truly delivered an outstanding product. The React application they developed for us is not only incredibly fast and responsive, but it's also remarkably user-friendly, making daily tasks so much smoother. We're genuinely impressed with the performance and intuitive design. I would highly, highly recommend their development team to anyone looking for top-tier results. ",
-      author: "Shivam Tyagi",
-      title: "Teacher",
-      avatar: "https://placehold.co/100x100/7C3AED/ffffff?text=ST"
-    },
-    {
-      quote: "WebKraftery truly delivered an outstanding product. The React application they developed for us is not only incredibly fast and responsive, but it's also remarkably user-friendly, making daily tasks so much smoother. We're genuinely impressed with the performance and intuitive design. I would highly, highly recommend their development team to anyone looking for top-tier results. ",
-      author: "Ashish",
-      title: "Freelencer",
-      avatar: "https://placehold.co/100x100/7C3AED/ffffff?text=A"
-    },
-  ];
+  const nextSlide = () => setActiveIndex((prev) => (prev + 1) % testimonials.length);
 
   return (
-    <div 
+    <section 
       ref={containerRef}
-      className="relative py-28 px-4 overflow-hidden bg-gray-100"
+      className="relative min-h-screen bg-[#F0F0F0] py-24 px-6 md:px-12 flex items-center overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto relative z-10">
-        <h3 
-          ref={titleRef}
-          className="text-4xl md:text-5xl lg:text-6xl font-bold text-center mb-12 md:mb-16 text-gray-800"
-        >
-          What Our Clients Say
-        </h3>
+      {/* Background Kinetic Element */}
+      <div className="absolute top-0 right-0 opacity-[0.05] pointer-events-none select-none">
+        <span className="text-[30vh] font-black uppercase tracking-tighter leading-none italic">
+          REVIEWS_2026
+        </span>
+      </div>
 
-        <Swiper
-          ref={swiperRef}
-          spaceBetween={30}
-          slidesPerView={1}
-          centeredSlides={true}
-          loop={true}
-          autoplay={{
-            delay: 5000,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true
-          }}
-          pagination={{
-            clickable: true,
-            dynamicBullets: true,
-            el: '.testimonial-pagination',
-            bulletClass: 'testimonial-bullet',
-            bulletActiveClass: 'testimonial-bullet-active'
-          }}
-          navigation={{
-            nextEl: '.testimonial-next',
-            prevEl: '.testimonial-prev'
-          }}
-          modules={[Autoplay, Pagination, Navigation]}
-          breakpoints={{
-            768: { slidesPerView: 1.2 },
-            1024: { slidesPerView: 1.5 }
-          }}
-          className="relative"
-          onInit={(swiper) => {
-            setTimeout(() => swiper.update(), 100);
-          }}
-        >
-          {testimonials.map((testimonial, index) => (
-            <SwiperSlide key={index}>
+      <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        
+        {/* LEFT SIDE: Fixed Editorial Heading */}
+        <div className="lg:col-span-5 space-y-8">
+          <div className="inline-block px-4 py-1 border-2 border-black rounded-full">
+            <span className="text-black text-[10px] font-black tracking-[0.4em] uppercase font-mono italic">
+              // Client Intelligence
+            </span>
+          </div>
+          <h2 className="text-7xl md:text-9xl font-black text-black leading-[0.8] tracking-tighter uppercase">
+            THE <br /> <span className="text-transparent" style={{ WebkitTextStroke: "1.5px black" }}>VERDICT.</span>
+          </h2>
+          <p className="text-xl font-bold text-gray-600 max-w-sm border-l-4 border-black pl-6">
+            Real stories from global leaders who scaled their digital presence through our architecture.
+          </p>
+          
+          {/* Custom HUD Nav Buttons */}
+          <div className="flex gap-4 pt-8">
+            <button 
+              onClick={nextSlide}
+              className="px-10 py-5 bg-black text-white font-black rounded-full hover:scale-105 transition-all active:scale-95 uppercase tracking-widest text-xs flex items-center gap-4"
+            >
+              Next Evidence <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        {/* RIGHT SIDE: The Animated Deck */}
+        <div className="lg:col-span-7 relative h-[500px] md:h-[600px] flex items-center justify-center perspective-[2000px]">
+          {testimonials.map((t, i) => {
+            const isActive = i === activeIndex;
+            const isPrev = i === (activeIndex - 1 + testimonials.length) % testimonials.length;
+            
+            return (
               <div 
-                className="bg-white p-8 md:p-10 rounded-3xl border border-gray-200 shadow-lg flex flex-col items-center text-center h-full min-h-[350px] md:min-h-[400px] justify-between transition-transform duration-500 hover:scale-[1.02]"
+                key={i}
+                className={`absolute w-full max-w-[550px] p-12 md:p-16 rounded-[1.5rem] border-4 border-black transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] shadow-[20px_20px_0px_0px_#000]
+                  ${isActive ? 'z-30 opacity-100 scale-100 translate-y-0 rotate-0' : ''}
+                  ${isPrev ? 'z-10 opacity-0 -translate-y-[100%] rotate-[-10deg]' : 'z-20 opacity-40 scale-90 translate-y-12 rotate-2'}
+                `}
+                style={{ 
+                    backgroundColor: t.color || '#fff', 
+                    color: t.text === 'text-black' ? '#000' : '#fff',
+                    visibility: isActive || !isPrev ? 'visible' : 'hidden'
+                }}
               >
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.author}
-                  className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover mb-6 md:mb-8 border-4 border-white"
-                />
+                {/* ID Header */}
+                <div className="flex justify-between items-center mb-12 font-mono text-xs font-black uppercase opacity-60">
+                   <span>ID://CLIENT_VERIFIED</span>
+                   <span>00{i + 1}</span>
+                </div>
 
-                <p className="text-gray-700 text-lg md:text-md lg:text-lg leading-relaxed mb-6 md:mb-8 font-medium italic">
-                  "{testimonial.quote}"
+                {/* The Quote */}
+                <p className="text-3xl md:text-5xl font-black tracking-tighter leading-[0.9] uppercase italic mb-12">
+                   "{t.quote}"
                 </p>
 
-                <div className="text-gray-900">
-                  <p className="text-lg font-bold mb-1">{testimonial.author}</p>
-                  <p className="text-gray-500 text-sm md:text-base">{testimonial.title}</p>
+                {/* Author Info */}
+                <div className="pt-8 border-t-4 border-current">
+                   <h4 className="text-2xl font-black uppercase leading-none">{t.author}</h4>
+                   <p className="text-sm font-bold opacity-60 uppercase tracking-widest mt-2">{t.role}</p>
+                </div>
+
+                {/* Floating HUD element */}
+                <div className="absolute top-10 right-10 flex gap-1">
+                   {[...Array(3)].map((_, dot) => (
+                     <div key={dot} className="w-1.5 h-1.5 rounded-full bg-current" />
+                   ))}
                 </div>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        <div className="testimonial-pagination flex justify-center mt-8 gap-2" />
-
-        <div className="testimonial-next absolute right-4 md:right-8 top-1/2 z-20 -translate-y-1/2 cursor-pointer hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-gray-300 hover:bg-gray-400 transition-colors duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-        <div className="testimonial-prev absolute left-4 md:left-8 top-1/2 z-20 -translate-y-1/2 cursor-pointer hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-gray-300 hover:bg-gray-400 transition-colors duration-300">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+            );
+          })}
         </div>
       </div>
 
-      <style jsx global>{`
-        .testimonial-bullet {
-          width: 12px;
-          height: 12px;
-          background: rgba(100, 100, 100, 0.5);
-          transition: all 0.3s ease;
-          margin: 0 6px !important;
-          border-radius: 9999px;
-          cursor: pointer;
-        }
-
-        .testimonial-bullet-active {
-          background: #333;
-          transform: scale(1.3);
-        }
-      `}</style>
-    </div>
+      {/* FIXED CORNER INDICATOR */}
+      <div className="absolute bottom-12 left-12 hidden lg:flex items-center gap-4">
+          <div className="w-12 h-[2px] bg-black" />
+          <span className="font-mono text-[10px] font-black uppercase tracking-[0.4em] text-black">
+            Sync_Proof_V2.0
+          </span>
+      </div>
+    </section>
   );
 };
 

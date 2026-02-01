@@ -1,204 +1,198 @@
-import React, { useState, useCallback } from 'react';
-import {
-  FaHome, FaBuilding, FaCogs, FaBars, FaMobile, FaAndroid, FaApple,
-  FaShieldAlt, FaWrench, FaUsers, FaQuestionCircle, FaLightbulb, FaPhoneAlt
-} from 'react-icons/fa';
-import { GrTasks } from "react-icons/gr";
-import { MdClose, MdInfo, MdSupervisorAccount } from 'react-icons/md';
-import { Link } from 'react-router-dom';
-import Logo from '../Components/Logo';
+import React, { useState, useEffect, useRef } from "react";
+import { MdClose, MdArrowOutward } from "react-icons/md";
+import { Link, useLocation } from "react-router-dom";
+import { gsap } from "gsap";
+import logo from "../assets/logo2.png";
 
 const itSolutions = [
-  { name: 'Custom Website Development', path: '/solutions/web-development', icon: <FaWrench /> },
-  { name: 'Backend Development', path: '/solutions/backend-development', icon: <FaCogs /> },
-  { name: 'Frontend Development', path: '/solutions/frontend-development', icon: <FaMobile /> },
-  { name: 'React Development', path: '/solutions/react-development', icon: <FaAndroid /> },
-  { name: 'UI/UX Design', path: '/solutions/ui-ux', icon: <FaApple /> },
-  { name: 'Software Maintenance & Support', path: '/solutions/software-maintenanace', icon: <FaShieldAlt /> },
-  { name: 'Advertising', path: '/solutions/google-advertising', icon: <FaLightbulb /> },
+  { name: "Web Dev", path: "/solutions/web-development" },
+  { name: "Architecture", path: "/solutions/backend-development" },
+  { name: "Interface", path: "/solutions/frontend-development" },
+  { name: "Atomic JS", path: "/solutions/react-development" },
+  { name: "Experience", path: "/solutions/ui-ux" },
+  { name: "Security", path: "/solutions/software-maintenanace" },
+  { name: "Ads", path: "/solutions/google-advertising" },
 ];
 
-const company = [
-  { name: 'About', path: '/company/aboutcompany', icon: <MdInfo /> },
-  { name: 'Mission, Vision and Values', path: '/company/vision-mission', icon: <FaLightbulb /> },
-  { name: 'Leadership Team', path: '/company/team', icon: <MdSupervisorAccount /> },
-  { name: 'Why Choose Us', path: '/company/why-choose-us', icon: <FaUsers /> },
-  { name: 'FAQ', path: '/company/faq', icon: <FaQuestionCircle /> },
-];
-
-const navItems = [
-  { name: 'Home', path: '/', icon: <FaHome /> },
-  { name: 'IT Solutions', icon: <FaCogs />, children: itSolutions },
-  { name: 'Company', icon: <FaBuilding />, children: company },
-  { name: 'Portfolio', path: '/portfolio', icon: <GrTasks /> },
-  { name: 'Contact Us', path: '/contactus', icon: <FaPhoneAlt /> },
+const secondaryLinks = [
+  { name: "About Us", path: "/company/aboutcompany" },
+  { name: "Teams", path: "/company/team" },
+  { name: "Works", path: "/portfolio" },
+  { name: "Our Vision", path: "/company/vision-mission" }, // New Link 1
+  { name: "Faqs", path: "/company/faq" }, // New Link 2
+  { name: "Contact", path: "/contactus" }, // New Link 3
 ];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const [mobileDropdown, setMobileDropdown] = useState(null);
+  const [scrolled, setScrolled] = useState(false);
+  const overlayRef = useRef(null);
+  const location = useLocation();
 
-  const toggleMobileDropdown = useCallback((name) => {
-    setMobileDropdown(prev => (prev === name ? null : name));
-  }, []);
+  // Handle Scroll & Route changes
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    setIsOpen(false); // Close menu on route change
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [location]);
 
-  const handleMouseEnter = useCallback((name) => {
-    setActiveDropdown(name);
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    setActiveDropdown(null);
-  }, []);
-
-  const closeMobileMenu = useCallback(() => {
-    setIsOpen(false);
-    setMobileDropdown(null);
-  }, []);
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+      gsap.to(overlayRef.current, {
+        y: 0,
+        duration: 0.8,
+        ease: "power4.inOut",
+      });
+      gsap.fromTo(
+        ".nav-item-anim",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.05, delay: 0.4, ease: "expo.out" },
+      );
+    } else {
+      document.body.style.overflow = "auto";
+      gsap.to(overlayRef.current, {
+        y: "-100%",
+        duration: 0.6,
+        ease: "power4.inOut",
+      });
+    }
+  }, [isOpen]);
 
   return (
-    <nav className="noto-serif bg-gray-800 text-white shadow-lg shadow-black/30 fixed top-0 w-full z-50 border-b border-white/10 mb-50">
-
-      <div className="max-w-7xl mx-auto px-2 py-1 flex items-center justify-between">
-        {/* Logo */}
-        <div className="text-2xl font-bold overflow-hidden hover:scale-120 transition-all delay-100">
-          <Link to="/" onClick={closeMobileMenu}>
-            <div className="p-1 shadow-md">
-              <Logo/>
-            </div>
-          </Link>
-        </div>
-
-        {/* Hamburger */}
-        <div className="md:hidden text-2xl cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <MdClose /> : <FaBars />}
-        </div>
-
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex md:items-center gap-6 text-sm md:text-xl font-sans font-semibold tracking-wide">
-          {navItems.map((item, idx) => (
-            <li
-              key={idx}
-              className="relative group"
-              onMouseEnter={() => handleMouseEnter(item.name)}
-              onMouseLeave={handleMouseLeave}
-            >
-              {item.path ? (
-                <Link
-                  to={item.path}
-                  className="flex items-center gap-1 cursor-pointer hover:text-purple-400 select-none py-2 px-1 relative group hover:scale-110 transition-all delay-110"
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                  <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-purple-400 transition-all duration-300 group-hover:w-full  hover:scale-110  delay-110"></span>
-                </Link>
-              ) : (
-                <div className="flex items-center gap-1 cursor-pointer hover:text-purple-400 select-none py-2 px-1 relative group  hover:scale-110 transition-all delay-110">
-                  {item.icon}
-                  <span>{item.name}</span>
-                  <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-purple-400 transition-all duration-300 group-hover:w-full  hover:scale-110  delay-110"></span>
-                </div>
-              )}
-
-              {item.children && (
-                <ul
-                  className={`absolute text-lg z-50 bg-white text-black mt-[7px] p-2 rounded shadow-lg w-78 origin-top transition-all duration-200 ease-out transform font-sans font-medium tracking-wide
-                    ${activeDropdown === item.name ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'}
-                    group-hover:scale-y-100 group-hover:opacity-100 group-hover:pointer-events-auto
-                  `}
-                >
-                  {item.children.map((subItem, subIdx) => (
-                    <li
-                      key={subIdx}
-                      className="px-4 py-2 hover:bg-purple-100 hover:text-purple-700 transition-colors flex items-center gap-2"
-                    >
-                      <Link to={subItem.path} className="flex items-center gap-2 w-full h-full">
-                        {subItem.icon}
-                        {subItem.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Mobile Menu */}
-      <div
-        className={`fixed top-0 right-0 text-lg h-full w-64 bg-purple-900 text-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 overflow-y-auto
-          ${isOpen ? 'translate-x-0' : 'translate-x-full'}
-        `}
+    <>
+      {/* --- HUD NAVBAR --- */}
+      <nav
+        className={`fixed top-0 w-full z-[100] transition-all duration-500 px-5 md:px-12 py-3 flex justify-between items-center ${
+          scrolled
+            ? "bg-black/80 backdrop-blur-md border-b border-white/5"
+            : "bg-transparent"
+        }`}
       >
-        <div className="flex justify-end p-4">
-          <MdClose className="text-3xl cursor-pointer" onClick={closeMobileMenu} />
-        </div>
-        <ul className="flex flex-col mt-4 px-4 font-sans font-semibold tracking-wide">
-          {navItems.map((item, idx) => (
-            <li key={idx} className="mb-2">
-              {item.path ? (
-                <Link
-                  to={item.path}
-                  onClick={closeMobileMenu}
-                  className="flex items-center gap-2 cursor-pointer px-2 py-3 hover:bg-purple-700 rounded select-none"
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                </Link>
-              ) : (
-                <div
-                  onClick={() => toggleMobileDropdown(item.name)}
-                  className="flex items-center gap-2 cursor-pointer px-2 py-3 hover:bg-purple-700 rounded select-none"
-                >
-                  {item.icon}
-                  <span>{item.name}</span>
-                  {item.children && (
-                    <svg
-                      className={`w-4 h-4 ml-auto transition-transform ${
-                        mobileDropdown === item.name ? 'rotate-90' : ''
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                    </svg>
-                  )}
-                </div>
-              )}
+        <Link to="/" className="flex items-center gap-2">
+          <img
+            src={logo}
+            alt="Logo"
+            className="w-10 h-10 md:w-12 md:h-12 object-contain"
+          />
+          <span className="text-[14px] md:text-[18px] font-black tracking-[0.3em] text-white uppercase">
+            EBKRAFTERY
+          </span>
+        </Link>
 
-              {item.children && mobileDropdown === item.name && (
-                <ul className="pl-6 mt-1 space-y-1">
-                  {item.children.map((subItem, subIdx) => (
-                    <li key={subIdx}>
-                      <Link
-                        to={subItem.path}
-                        onClick={closeMobileMenu}
-                        className="flex items-center gap-2 px-2 py-2 rounded hover:bg-purple-700 transition-colors"
-                      >
-                        {subItem.icon}
-                        {subItem.name}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
+        <div className="flex items-center gap-6">
+          <Link
+            to="/contactus"
+            className="hidden md:flex items-center gap-2 text-[11px] font-bold tracking-widest uppercase text-white/70 hover:text-purple-400 transition-colors"
+          >
+            Start_Project <MdArrowOutward />
+          </Link>
+
+          <button
+            onClick={() => setIsOpen(true)}
+            aria-label="Open Menu"
+            className="flex items-center gap-3 group"
+          >
+            <span className="hidden sm:block text-[10px] tracking-[0.3em] text-white/50 group-hover:text-white transition-colors">
+              MENU
+            </span>
+            <div className="flex flex-col gap-1.5 items-end">
+              <div className="w-8 h-[2px] bg-white group-hover:w-10 transition-all" />
+              <div className="w-5 h-[2px] bg-purple-500" />
+            </div>
+          </button>
+        </div>
+      </nav>
+
+      {/* --- FULLSCREEN OVERLAY (Mobile-First Scrollable) --- */}
+      <div
+        ref={overlayRef}
+        className="fixed inset-0 z-[110] bg-[#080808] translate-y-[-100%] flex flex-col overflow-y-auto"
+      >
+        {/* Header inside Menu */}
+        <div className="flex justify-between items-center px-6 py-6 md:px-12 border-b border-white/5">
+          <span className="text-white/30 font-mono text-[10px] tracking-widest uppercase italic">
+            Index_2026
+          </span>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white/5 text-white active:scale-90 transition-transform"
+          >
+            <MdClose size={28} />
+          </button>
+        </div>
+
+        {/* Content Container */}
+        <div className="flex flex-col md:flex-row flex-grow">
+          {/* Section 1: Services */}
+          <div className="w-full md:w-[60%] p-8 md:p-20 flex flex-col justify-center">
+            <p className="nav-item-anim text-purple-500 font-mono text-[10px] tracking-[0.4em] uppercase mb-8 md:mb-12">
+              // Services
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-8">
+              {itSolutions.map((item, i) => (
+                <Link
+                  key={i}
+                  to={item.path}
+                  className="nav-item-anim group flex items-center justify-between border-b border-white/10 py-3 md:py-4"
+                >
+                  <span className="text-2xl md:text-5xl font-light text-white/40 group-hover:text-white transition-colors">
+                    {item.name}
+                  </span>
+                  <MdArrowOutward className="text-purple-500 opacity-0 group-hover:opacity-100 transition-all" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Section 2: Main Navigation */}
+          <div className="w-full md:w-[40%] bg-white/[0.02] p-8 md:p-20 flex flex-col justify-between border-t md:border-t-0 md:border-l border-white/5">
+            <div className="flex flex-col gap-4 md:gap-6">
+              <p className="nav-item-anim text-white/20 font-mono text-[10px] tracking-[0.4em] uppercase mb-2">
+                // Navigation
+              </p>
+
+              {secondaryLinks.map((link, i) => (
+                <Link
+                  key={i}
+                  to={link.path}
+                  onClick={() => setIsOpen(false)}
+                  className="nav-item-anim text-3xl md:text-5xl lg:text-6xl font-black italic uppercase text-white hover:text-purple-500 transition-all duration-300 tracking-tighter hover:translate-x-2"
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+
+            {/* Footer Information */}
+            <div className="mt-12 md:mt-0 pt-10 border-t border-white/10 flex flex-row justify-between items-end">
+              <div>
+                <p className="text-[10px] text-white/20 uppercase font-mono mb-1">
+                  HQ / India
+                </p>
+                <p className="text-[11px] text-white/60 uppercase">
+                  28.6692° N, 77.4538° E
+                </p>
+              </div>
+              <p className="text-[10px] text-white/20 uppercase font-mono">
+                © 2026 PRYZEN
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-50 z-40"
-          onClick={closeMobileMenu}
-          aria-hidden="true"
-        />
-      )}
-      <div className='bg-purple-200 max-w-full h-0.5'></div>
-    </nav>
+      {/* --- Adaptive Status Dot --- */}
+      <div className="fixed bottom-6 right-6 z-[100] md:right-10 md:bottom-10 pointer-events-none">
+        <div className="flex items-center gap-3 bg-white/5 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-full">
+          <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_#10b981]" />
+          <span className="font-mono text-[8px] tracking-widest text-white/40 uppercase">
+            Live
+          </span>
+        </div>
+      </div>
+    </>
   );
 };
 

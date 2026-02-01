@@ -2,169 +2,176 @@ import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useNavigate } from 'react-router-dom';
-import Maintainance1 from '../../assets/Maintainance1.jpeg'
-import Maintainance2 from '../../assets/Software-Maintenance2.jpg'
+import Maintainance1 from '../../assets/Maintainance1.jpeg';
+import Maintainance2 from '../../assets/Software-Maintenance2.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const SoftwareMaintenance = () => {
   const navigate = useNavigate();
-  const heroTextRef = useRef(null); // Ref for the hero section text
-  const heroImageRef = useRef(null); // Ref for the hero section image
-  const section2Ref = useRef(null); // Ref for the second content section (text)
-  const section2ImageRef = useRef(null); // Ref for the second content section (image)
-  const ctaRef = useRef(null);         // Ref for the Call to Action section
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const tl = gsap.timeline({ defaults: { duration: 1.2, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
 
-    // Initial animation for the hero section (text and first image)
-    tl.fromTo(
-      heroTextRef.current,
-      { x: -100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 }
-    )
-    .fromTo(
-      heroImageRef.current,
-      { x: 100, opacity: 0, scale: 0.9 },
-      { x: 0, opacity: 1, scale: 1 },
-      '-=0.8'
-    );
+      // Title & Hero Entrance
+      tl.from(".reveal-title", { y: 100, opacity: 0, stagger: 0.2, duration: 1.5 })
+        .from(".hero-card", { scale: 0.9, opacity: 0, duration: 1.2 }, "-=1")
+        .from(".status-tag", { x: -20, opacity: 0, duration: 0.8 }, "-=0.5");
 
-    // Scroll-triggered animations for subsequent sections
-    // Section 2 animation (text and image)
-    gsap.fromTo(
-      section2Ref.current,
-      { y: 80, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: section2Ref.current,
-          start: 'top 80%', // When top of trigger hits 80% of viewport
-          toggleActions: 'play none none none', // Play animation once
-        }
-      }
-    );
+      // Scroll reveals
+      gsap.utils.toArray(".reveal-section").forEach((el) => {
+        gsap.from(el, {
+          scrollTrigger: {
+            trigger: el,
+            start: "top 85%",
+          },
+          y: 60,
+          opacity: 0,
+          duration: 1.2,
+        });
+      });
+    }, containerRef);
 
-    gsap.fromTo(
-      section2ImageRef.current,
-      { scale: 0, opacity: 0 },
-      {
-        scale: 1,
-        opacity: 1,
-        duration: 1,
-        ease: 'back.out(1.7)',
-        scrollTrigger: {
-          trigger: section2ImageRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
-    // CTA section animation
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0 },
-      {
-        y: 0,
-        opacity: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%', // Adjust as needed
-          toggleActions: 'play none none none',
-        }
-      }
-    );
-
+    return () => ctx.revert();
   }, []);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-200 min-h-screen py-2 px-4 sm:px-6 lg:px-8 mt-20">
-      <div className="max-w-[90vw] mx-auto rounded-xl shadow-2xl overflow-hidden bg-white">
-        {/* Hero Section for Software Maintenance & Support */}
-        <div className="paraFont-900 relative p-4 md:p-6 lg:p-8 text-center bg-gradient-to-b from-purple-950 to-purple-300 text-white">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-4 leading-tight">
-            Software Maintenance & Support
+    <div ref={containerRef} className="relative bg-[#05070a] text-[#e0e0e0] min-h-screen font-sans overflow-hidden">
+      
+      {/* --- PREMIUM TECH BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-50"></div>
+      
+      {/* Dot Grid Pattern */}
+      <div className="absolute inset-0 opacity-10 pointer-events-none bg-[radial-gradient(#3b82f6_1px,transparent_1px)] [background-size:40px_40px]"></div>
+
+      {/* High-End Glows */}
+      <div className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] bg-blue-600/10 blur-[150px] rounded-full" />
+      <div className="absolute bottom-[10%] right-[-5%] w-[40vw] h-[40vw] bg-emerald-500/10 blur-[120px] rounded-full" />
+
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-24">
+        
+        {/* --- HERO SECTION --- */}
+        <header className="mb-40">
+          <div className="status-tag inline-flex items-center gap-3 px-4 py-1 mb-8 border border-emerald-500/30 rounded-full bg-emerald-500/5 backdrop-blur-md">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-emerald-400 text-[10px] font-bold tracking-[0.3em] uppercase font-mono">
+              System Active: 24/7 Monitoring
+            </span>
+          </div>
+          
+          <h1 className="reveal-title text-6xl md:text-[130px] font-black leading-[0.85] tracking-tighter mb-10">
+            ELITE <br /> 
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-200 italic font-serif font-light">
+              MAINTENANCE.
+            </span>
           </h1>
-          <p className="text-lg sm:text-xl opacity-90 max-w-3xl mx-auto">
-            Ensuring your software runs flawlessly with continuous maintenance, updates, and dedicated support.
+          <p className="reveal-title max-w-2xl text-gray-500 text-lg md:text-xl font-light leading-relaxed">
+            Software isn't static. We provide the continuous engineering pulse that keeps your infrastructure secure, optimized, and future-proof.
           </p>
-        </div>
+        </header>
 
-        {/* Content Section 1: Why Software Maintenance */}
-        <div className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16">
-          <div ref={heroTextRef} className="md:w-1/2 text-gray-800">
-            <h2 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Keep Your Applications Running Smoothly and Securely
-            </h2>
-            <p className="mb-4 text-lg leading-relaxed">
-              Software is never truly "finished." It requires ongoing maintenance, updates, and support to remain secure, efficient, and relevant. Our comprehensive software maintenance and support services ensure your applications perform optimally, adapt to new technologies, and stay protected against vulnerabilities.
-            </p>
-            <p className="text-purple-900 font-semibold mb-2">Our Maintenance Services Include:</p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Bug Fixing & Performance Optimization</li>
-              <li>Security Patches & Vulnerability Management</li>
-              <li>Feature Enhancements & Upgrades</li>
-              <li>Database Maintenance & Optimization</li>
-              <li>Code Refactoring & Technical Debt Reduction</li>
-              <li>24/7 Monitoring & Emergency Support</li>
-            </ul>
-          </div>
-
-          <div ref={heroImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={Maintainance1}
-              alt="Software Maintenance Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Software+Maint+Image"; }} // Fallback
+        {/* --- BENTO GRID CONTENT --- */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-40">
+          
+          {/* Main Maintenance Hub */}
+          <div className="hero-card md:col-span-8 bg-white/[0.02] border border-white/5 rounded-[2.5rem] p-12 relative overflow-hidden group">
+            <div className="relative z-10">
+              <h2 className="text-4xl font-serif italic mb-6">Zero Downtime <br />Philosophy.</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <p className="text-gray-400 font-light leading-relaxed">
+                  We don't wait for things to break. Our proactive protocols identify vulnerabilities and performance bottlenecks before they impact your users.
+                </p>
+                <ul className="space-y-3">
+                  {[
+                    "Security Patching",
+                    "Performance Tuning",
+                    "Database Optimization",
+                    "Feature Scaling"
+                  ].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-xs font-mono text-blue-400 tracking-wider">
+                      <span className="w-4 h-[1px] bg-blue-500" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+            <img 
+              src={Maintainance1} 
+              alt="Diagnostics" 
+              className="absolute right-[-10%] bottom-[-15%] w-2/3 opacity-20 grayscale group-hover:grayscale-0 group-hover:opacity-60 transition-all duration-1000 scale-110"
             />
           </div>
+
+          {/* Uptime Quirky Card */}
+          <div className="hero-card md:col-span-4 bg-blue-900/20 border border-blue-500/20 rounded-[2.5rem] p-10 flex flex-col justify-between overflow-hidden relative group">
+            <div className="text-blue-400 font-mono text-[10px] uppercase tracking-widest italic font-bold">Health_Report</div>
+            <div className="relative z-10">
+              <span className="text-8xl font-black italic text-white tracking-tighter">99.9</span>
+              <span className="text-2xl font-serif text-blue-400">%</span>
+              <p className="text-gray-500 text-xs mt-2 uppercase tracking-[0.2em] font-light">Service availability <br /> across all managed nodes.</p>
+            </div>
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-blue-500/20 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-700" />
+          </div>
+
+          {/* Support HUD Section */}
+          <div className="reveal-section md:col-span-12 mt-6 bg-[#0a0c12] border border-white/5 rounded-[3rem] p-12 relative overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-blue-500/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+                <img 
+                  src={Maintainance2} 
+                  className="relative z-10 rounded-[2rem] border border-white/10 grayscale hover:grayscale-0 transition-all duration-700"
+                  alt="Support Command Center"
+                />
+              </div>
+              <div className="space-y-10">
+                <span className="text-blue-500 font-mono text-xs uppercase tracking-[0.4em]">Integrated Response</span>
+                <h3 className="text-5xl font-serif italic">The Human <br /><span className="text-white not-italic font-black tracking-tighter uppercase underline decoration-blue-500 decoration-1 underline-offset-8">Support Layer.</span></h3>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                  {[
+                    { t: "Rapid Triage", d: "Sub-hour response times for critical incidents." },
+                    { t: "Proactive Guard", d: "Automated alerts before thresholds are reached." },
+                    { t: "Code Hygiene", d: "Regular refactoring to reduce technical debt." },
+                    { t: "Cloud Mastery", d: "Expert management of AWS, Azure, & GCP." }
+                  ].map((s, i) => (
+                    <div key={i} className="group">
+                      <h5 className="text-blue-400 font-mono text-[10px] mb-2 font-bold uppercase tracking-widest">0{i+1}_</h5>
+                      <h6 className="text-lg font-bold mb-1 group-hover:text-blue-300 transition-colors uppercase tracking-tighter italic">{s.t}</h6>
+                      <p className="text-gray-500 text-xs font-light leading-relaxed">{s.d}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Content Section 2: Our Support Approach */}
-        <div ref={section2Ref} className="noto-serif flex flex-col md:flex-row items-center gap-10 p-8 md:p-12 lg:p-16 bg-purple-50 rounded-b-xl">
-          <div ref={section2ImageRef} className="md:w-1/2 flex justify-center items-center">
-            <img
-              src={Maintainance2}
-              alt="Support Team Illustration"
-              className="w-full h-auto rounded-lg shadow-xl border border-purple-300 transform hover:scale-105 transition-transform duration-300 ease-in-out"
-              onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/600x400/8B5CF6/ffffff?text=Support+Image"; }} // Fallback
-            />
-          </div>
-          <div className="md:w-1/2 text-gray-800">
-            <h3 className="text-3xl sm:text-4xl font-bold text-purple-800 mb-6">
-              Dedicated Support for Uninterrupted Operations
-            </h3>
-            <p className="mb-4 text-lg leading-relaxed">
-              Beyond just fixing issues, our support team acts as an extension of your business. We provide proactive monitoring, rapid response to incidents, and expert guidance to ensure your software infrastructure is always robust and reliable. Minimize downtime and maximize productivity with our dedicated support.
-            </p>
-            <ul className="list-disc list-inside text-lg text-gray-700 space-y-2">
-              <li>Proactive Monitoring & Alerting</li>
-              <li>Rapid Incident Response & Resolution</li>
-              <li>Technical Assistance & Troubleshooting</li>
-              <li>Regular Reporting & Performance Reviews</li>
-              <li>Scalable Support Plans Tailored to Your Needs</li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Call to Action or Additional Info */}
-        <div ref={ctaRef} className="paraFont-900 bg-gradient-to-t from-purple-950 to-purple-300 text-white p-8 md:p-12 lg:p-16 text-center">
-          <h3 className="text-2xl sm:text-3xl font-bold mb-4">Secure your software's future.</h3>
-          <p className="text-lg mb-6">
-            Partner with us for reliable software maintenance and support that keeps your business thriving.
-          </p>
-          <button onClick={()=>{navigate('/contactus')}}
-          className="bg-white text-purple-700 font-semibold py-3 px-8 rounded-full shadow-lg hover:bg-purple-100 hover:text-purple-900 transition-colors duration-300">
-            Get a Custom Support Plan
+        {/* --- PREMIUM CTA --- */}
+        <footer className="reveal-section text-center py-32 relative rounded-[4rem] bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/3 h-[1px] bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+          
+          <h2 className="text-5xl md:text-7xl font-serif italic mb-12">
+            Secure your <span className="not-italic font-black text-white underline decoration-blue-500 decoration-1 underline-offset-[12px]">Digital Legacy.</span>
+          </h2>
+          
+          <button
+            onClick={() => navigate('/contactus')}
+            className="group relative px-20 py-6 bg-transparent overflow-hidden"
+          >
+            <span className="relative z-10 text-white font-mono tracking-[0.6em] text-[10px] uppercase group-hover:text-black transition-colors duration-500">
+                Deploy Support Plan
+            </span>
+            <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-[expo.inOut]"></div>
+            <div className="absolute inset-0 border border-white/20"></div>
           </button>
-        </div>
+        </footer>
       </div>
     </div>
   );

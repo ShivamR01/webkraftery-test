@@ -1,135 +1,171 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useNavigate } from 'react-router-dom';
-import CTA from '../Common/CTA';
-import CTACard from '../Common/CTACard';
+import { MdArrowOutward, MdEmail, MdPhone } from 'react-icons/md';
 
 gsap.registerPlugin(ScrollTrigger);
 
+const teamMembers = [
+  {
+    id: "01",
+    name: 'Kunal Koushik',
+    role: 'CEO & Founder',
+    bio: "Software architect specializing in end-to-end development of scalable web applications. Focus is on high-performance user experiences.",
+    email: "kunalkoushik44@gmail.com",
+    color: "#a855f7" // Purple
+  },
+  {
+    id: "02",
+    name: 'Prince Tyagi',
+    role: 'Co-Founder & CTO',
+    bio: 'Passionate developer skilled in building seamless user experiences with a focus on clean, mission-critical code.',
+    email: "princetyagi1901@gmail.com",
+    color: "#6366f1" // Indigo
+  },
+  {
+    id: "03",
+    name: 'The RealCoder',
+    role: 'Managing Director',
+    bio: 'Expert in operational management and software architecture, translating digital visions into market-ready products.',
+    email: "realcoder24@gmail.com",
+    color: "#14b8a6" // Teal
+  },
+];
+
 const LeadershipTeam = () => {
-  const navigate = useNavigate();
-  // Refs for GSAP animations
-  const headingRef = useRef(null);
-  const introTextRef = useRef(null);
-  const teamGridRef = useRef(null);
-  const ctaRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const containerRef = useRef(null);
+  const bioRef = useRef(null);
 
   useEffect(() => {
-    // Animation for the main heading and intro text
-    const tl = gsap.timeline({ defaults: { duration: 1, ease: 'power3.out' } });
+    const ctx = gsap.context(() => {
+      // Reveal Main Title
+      gsap.from(".title-reveal", {
+        y: 100,
+        opacity: 0,
+        stagger: 0.1,
+        duration: 1.2,
+        ease: "expo.out"
+      });
 
-    tl.fromTo(
-      headingRef.current,
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1 }
-    )
-    .fromTo(
-      introTextRef.current,
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1 },
-      '-=0.5' // Stagger slightly after the heading
-    );
-
-    // Scroll-triggered animation for the team member cards
-    gsap.fromTo(
-      teamGridRef.current.children, // Animate each child of the grid
-      { y: 50, opacity: 0, scale: 0.95 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.8,
-        ease: 'power2.out',
-        stagger: 0.2, // Stagger the animation of each team member card
+      // Background Parallax
+      gsap.to(".bg-text", {
+        xPercent: -20,
         scrollTrigger: {
-          trigger: teamGridRef.current,
-          start: 'top 80%', // When the top of the grid enters the viewport
-          toggleActions: 'play none none none',
-        },
-      }
-    );
+          trigger: containerRef.current,
+          scrub: 1
+        }
+      });
+    }, containerRef);
 
-    // Scroll-triggered animation for the CTA section
-    gsap.fromTo(
-      ctaRef.current,
-      { y: 50, opacity: 0, scale: 0.95 },
-      {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 1,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 90%',
-          toggleActions: 'play none none none',
-        },
-      }
-    );
-
+    return () => ctx.revert();
   }, []);
 
-  // Sample team member data
-  const teamMembers = [
-    {
-      name: 'Kunal Koushik',
-      title: 'CEO & Founder',
-      phone:"8882320645",
-      email:"kunalkoushik44@gmail.com",
-      bio:"A dedicated software developer specializing in the end-to-end development of scalable web applications. My focus is on writing clean, efficient code to deliver intuitive and high-performance user experiences." },
-    {
-      name: 'Mr. Prince Tyagi',
-      title: 'Co-Founder & Chief Technology Officer (CTO)',
-      phone:'8936950459',
-      email:'princetyagi1901@gmail.com',
-      bio:'Passionate software developer skilled in building scalable web applications and crafting seamless user experiences. Proficient in modern technologies with a focus on clean, efficient code.'
-    
-    },
-    {
-      name: 'The RealCoder',
-      title: 'Co-Founder and Managerial Director',
-      phone:'9899794119',
-      email:'realcoder24@gmail.com',
-      bio:'Passionate software developer skilled in building scalable web applications and crafting seamless user experiences. Proficient in modern technologies with a focus on clean, efficient code.'
-    
-      
-    },
-  ];
+  // Animate Bio change
+  useEffect(() => {
+    gsap.fromTo(bioRef.current, 
+      { opacity: 0, x: 20 }, 
+      { opacity: 1, x: 0, duration: 0.5, ease: "power2.out" }
+    );
+  }, [activeIndex]);
 
   return (
-    <div className="bg-gradient-to-br from-purple-50 to-purple-100 min-h-screen font-sans">
-      <div className="max-w-6xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
-
-        {/* Header Section */}
-        <section className="paraFont-900 text-center mb-16">
-          <h1 ref={headingRef} className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-purple-800 mb-6 leading-tight">
-            Meet Our Leadership Team
-          </h1>
-          <p ref={introTextRef} className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto">
-            At webkraftery, our success is driven by a passionate team of experts dedicated to digital excellence and client innovation. Get to know the leaders guiding our mission.
-          </p>
-        </section>
+    <div ref={containerRef} className="relative bg-[#050208] text-white min-h-screen overflow-hidden selection:bg-purple-500/30">
       
-        {/* Team Members Grid */}
-        <section ref={teamGridRef} className="max-w-5xl noto-serif grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mx-auto mb-16">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="flex justify-center">
-              <CTACard
-                name={member.name}
-                role={member.title}
-                email={member.email}
-                phone={member.phone}
-                bio={member.bio}
-                logoText="WEB KRAFTERY"
-              />
-            </div>
-          ))}
-        </section>
+      {/* --- KINETIC BACKGROUND --- */}
+      <div className="absolute inset-0 pointer-events-none z-0">
+        <div className="bg-text absolute top-1/4 left-0 whitespace-nowrap text-[20vw] font-black opacity-[0.02] uppercase italic">
+          Architecting Futures • Leadership • 
+        </div>
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full blur-[160px] transition-colors duration-1000 opacity-20"
+          style={{ backgroundColor: teamMembers[activeIndex].color }}
+        />
+      </div>
+
+      <div className="relative z-10 max-w-[1400px] mx-auto px-6 py-24 md:py-32 flex flex-col min-h-screen">
         
-        {/* Call to Action Section */}
-        <div ref={ctaRef}>
-          <CTA />
+        {/* --- HEADER --- */}
+        <header className="mb-20">
+          <p className="title-reveal text-purple-500 font-mono text-xs tracking-[0.5em] uppercase mb-4 italic">
+            // Core_Leadership
+          </p>
+          <h1 className="title-reveal text-6xl md:text-[10vw] font-black leading-[0.8] tracking-tighter uppercase italic">
+            Minds behind <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-white/50 to-white/10 not-italic font-light">the craft.</span>
+          </h1>
+        </header>
+
+        {/* --- INTERACTIVE GRID --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+          
+          {/* Left: Interactive List */}
+          <div className="flex flex-col border-t border-white/10">
+            {teamMembers.map((member, index) => (
+              <button
+                key={member.id}
+                onMouseEnter={() => setActiveIndex(index)}
+                className="group relative flex items-center justify-between py-10 border-b border-white/10 text-left outline-none"
+              >
+                <div className="flex items-baseline gap-6">
+                  <span className="font-mono text-xs text-white/30">{member.id}</span>
+                  <h2 className={`text-4xl md:text-7xl font-bold tracking-tighter transition-all duration-500 ${activeIndex === index ? 'pl-8 text-white' : 'text-white/20 group-hover:text-white/50'}`}>
+                    {member.name}
+                  </h2>
+                </div>
+                <div className={`transition-all duration-500 transform ${activeIndex === index ? 'opacity-100 scale-100 rotate-45' : 'opacity-0 scale-50'}`}>
+                  <MdArrowOutward size={48} className="text-purple-500" />
+                </div>
+                
+                {/* Underline Progress */}
+                {activeIndex === index && (
+                   <motion-div className="absolute bottom-0 left-0 h-[2px] bg-purple-500 w-full" />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Right: Dynamic Intelligence Card */}
+          <div className="relative hidden lg:block">
+            <div className="relative z-10 p-12 bg-white/[0.02] border border-white/10 backdrop-blur-3xl rounded-[3rem] min-h-[500px] flex flex-col justify-between">
+              
+              <div ref={bioRef}>
+                <p className="text-purple-500 font-mono text-[10px] tracking-widest uppercase mb-6 italic">
+                  // Portfolio_Focus: {teamMembers[activeIndex].role}
+                </p>
+                <h3 className="text-4xl font-serif italic mb-8">"{teamMembers[activeIndex].bio}"</h3>
+              </div>
+
+              <div className="space-y-4">
+                <div className="h-[1px] w-full bg-gradient-to-r from-white/20 to-transparent" />
+                <div className="flex flex-col gap-2">
+                  <a href={`mailto:${teamMembers[activeIndex].email}`} className="flex items-center gap-3 text-white/40 hover:text-purple-400 transition-colors group">
+                    <MdEmail /> <span className="font-mono text-xs uppercase tracking-widest">{teamMembers[activeIndex].email}</span>
+                  </a>
+                </div>
+              </div>
+
+              {/* Decorative Circle */}
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 border border-white/5 rounded-full flex items-center justify-center animate-spin-slow">
+                 <div className="w-2 h-2 bg-purple-500 rounded-full" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Bio (Only visible on small screens) */}
+        <div className="lg:hidden mt-10 p-8 bg-white/5 rounded-3xl border border-white/10">
+          <p className="text-purple-400 font-mono text-[10px] uppercase mb-4">Current Selection:</p>
+          <p className="text-xl italic text-white/80">{teamMembers[activeIndex].bio}</p>
+        </div>
+
+      </div>
+
+      {/* --- HUD STATUS --- */}
+      <div className="fixed bottom-10 left-10 hidden xl:block z-50">
+        <div className="rotate-[-90deg] origin-left flex items-center gap-4">
+          <span className="text-[10px] font-mono tracking-[0.3em] text-white/20 uppercase">Leadership_Matrix_v1.0</span>
+          <div className="w-20 h-[1px] bg-white/10" />
         </div>
       </div>
     </div>
